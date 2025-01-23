@@ -7,3 +7,6 @@ riderModule.iml
 *.sln.iml
 *.sln.DotSettings.user
 *.Development.json
+*.crt
+*.key
+*.pfx

@@ -1,7 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Model;
 
-namespace Repository;
+namespace Repository.Context;
 
 public class DelivereaseDbContext : DbContext
 {

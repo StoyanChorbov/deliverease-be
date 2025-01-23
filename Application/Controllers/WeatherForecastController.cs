@@ -1,9 +1,10 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Application.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("/weatherforecast")]
 public class WeatherForecastController : ControllerBase
 {
     private static readonly string[] Summaries =
@@ -18,9 +19,9 @@ public class WeatherForecastController : ControllerBase
         _logger = logger;
     }
 
-    [HttpGet(Name = "Get")]
+    [HttpGet]
     public IActionResult Get()
     {
-        return Ok();
+        return Ok(Summaries);
     }
 }

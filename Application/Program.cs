@@ -1,5 +1,11 @@
+using System;
+using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Repository;
+using Repository.Context;
 using Service;
 
 namespace Application;
@@ -13,8 +19,7 @@ public class Program
         var connectionString = builder
             .Configuration
             .GetConnectionString("DefaultConnection")
-            ?.Replace("{DATABASE}", Environment.GetEnvironmentVariable("DATABASE"))
-            .Replace("{DB_USER}", Environment.GetEnvironmentVariable("DB_USER"))
+            ?.Replace("{DB_USER}", Environment.GetEnvironmentVariable("DB_USER"))
             .Replace("{DB_PASS}", Environment.GetEnvironmentVariable("DB_PASS"));
 
         // Add services to the container.
@@ -39,8 +44,7 @@ public class Program
 
         app.UseHttpsRedirection();
 
-        // app.UseAuthorization();
-
+        app.UseAuthorization();
 
         app.MapControllers();
 
