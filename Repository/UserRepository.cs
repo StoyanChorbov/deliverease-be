@@ -1,6 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using Model;
+﻿using Model;
 using Repository.Context;
 
 namespace Repository;

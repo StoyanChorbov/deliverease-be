@@ -1,6 +1,53 @@
 ﻿services:
+  postgres_db:
+    container_name: postgres_db
+    image: postgres:17.2
+    environment:
+      POSTGRES_USER: deliverease_db_user
+      POSTGRES_PASSWORD: deliverease_db_pass
+      POSTGRES_DB: deliverease_db
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U deliverease_db_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      
   application:
-    image: application
+    container_name: application
     build:
       context: .
-      dockerfile: DeliverEase/Dockerfile
+      dockerfile: Application/Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - DB_USER=deliverease_db_user
+      - DB_PASS=deliverease_db_pass
+    depends_on:
+      postgres_db:
+        condition: service_healthy
+    networks:
+      - backend
+      - web_app
+  
+  view:
+    container_name: web_view
+    build:
+      context: .
+      dockerfile: View/Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - application
+    networks:
+      - web_app
+
+networks:
+  backend:
+  web_app:
+
+volumes:
+  db_data:

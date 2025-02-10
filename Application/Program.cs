@@ -1,9 +1,4 @@
-using System;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Repository;
 using Repository.Context;
 using Service;
@@ -19,8 +14,8 @@ public class Program
         var connectionString = builder
             .Configuration
             .GetConnectionString("DefaultConnection")
-            ?.Replace("{DB_USER}", Environment.GetEnvironmentVariable("DB_USER"))
-            .Replace("{DB_PASS}", Environment.GetEnvironmentVariable("DB_PASS"));
+            ?.Replace("${DB_USER}", Environment.GetEnvironmentVariable("DB_USER"))
+            .Replace("${DB_PASS}", Environment.GetEnvironmentVariable("DB_PASS"));
 
         // Add services to the container.
         builder.Services.AddDbContext<DelivereaseDbContext>(options => { options.UseNpgsql(connectionString); });
@@ -33,7 +28,22 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen();
 
+        builder.WebHost.ConfigureKestrel(options =>
+        {
+            // options.ListenAnyIP(8080);
+            options.ListenAnyIP(8081, listenOptions =>
+            {
+                listenOptions.UseHttps("/https/aspnetcore.pfx", "");
+            });
+        });
+
         var app = builder.Build();
+
+        using (var scope = app.Services.CreateScope())
+        {
+            var dbContext = scope.ServiceProvider.GetRequiredService<DelivereaseDbContext>();
+            dbContext.Database.Migrate();
+        }
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())

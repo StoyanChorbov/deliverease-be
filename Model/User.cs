@@ -21,22 +21,18 @@ public class User : BaseEntity
     [EmailAddress]
     public string Email { get; set; }
     
-    public string? Phone { get; set; }
-
+    public string Phone { get; set; }
+    
+    public bool IsDeliveryPerson { get; set; }
+    
+    public ICollection<Delivery> DelivererDeliveries { get; set; } = new List<Delivery>();
+    public ICollection<Delivery> SenderDeliveries { get; set; } = new List<Delivery>();
+    
     public User()
     {
     }
 
-    public User(string username, string password, string firstName, string lastName, string email)
-    {
-        Username = username;
-        Password = password;
-        FirstName = firstName;
-        LastName = lastName;
-        Email = email;
-    }
-
-    public User(string username, string password, string firstName, string lastName, string email, string? phone)
+    public User(string username, string password, string firstName, string lastName, string email, string phone = "", bool isDeliveryPerson = false)
     {
         Username = username;
         Password = password;
@@ -44,5 +40,6 @@ public class User : BaseEntity
         LastName = lastName;
         Email = email;
         Phone = phone;
+        IsDeliveryPerson = isDeliveryPerson;
     }
 }

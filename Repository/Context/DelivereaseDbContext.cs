@@ -6,6 +6,7 @@ namespace Repository.Context;
 public class DelivereaseDbContext : DbContext
 {
     public DbSet<User> Users { get; set; }
+    public DbSet<Delivery> Deliveries { get; set; }
 
     public DelivereaseDbContext()
     {
@@ -13,5 +14,20 @@ public class DelivereaseDbContext : DbContext
 
     public DelivereaseDbContext(DbContextOptions<DelivereaseDbContext> options) : base(options)
     {
+    }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.SenderDeliveries)
+            .WithOne(d => d.Sender)
+            .HasForeignKey(d => d.DelivererId);
+        
+        modelBuilder.Entity<User>()
+            .HasMany(u => u.DelivererDeliveries)
+            .WithOne(d => d.Deliverer)
+            .HasForeignKey(d => d.DelivererId);
+        
+        base.OnModelCreating(modelBuilder);
     }
 }
