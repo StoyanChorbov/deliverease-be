@@ -34,7 +34,7 @@ public class Program
             // options.ListenAnyIP(8080);
             options.ListenAnyIP(8081, listenOptions =>
             {
-                listenOptions.UseHttps("/https/aspnetcore.pfx", "");
+                // listenOptions.UseHttps("/https/aspnetcore.pfx", "");
             });
         });
 
