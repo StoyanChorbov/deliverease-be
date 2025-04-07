@@ -21,7 +21,7 @@ public class User : BaseEntity
     [EmailAddress]
     public string Email { get; set; }
     
-    public string Phone { get; set; }
+    public string PhoneNumber { get; set; }
     
     public bool IsDeliveryPerson { get; set; }
     
@@ -32,14 +32,14 @@ public class User : BaseEntity
     {
     }
 
-    public User(string username, string password, string firstName, string lastName, string email, string phone = "", bool isDeliveryPerson = false)
+    public User(string username, string password, string firstName, string lastName, string email, string phoneNumber = "", bool isDeliveryPerson = false)
     {
         Username = username;
         Password = password;
         FirstName = firstName;
         LastName = lastName;
         Email = email;
-        Phone = phone;
+        PhoneNumber = phoneNumber;
         IsDeliveryPerson = isDeliveryPerson;
     }
 }

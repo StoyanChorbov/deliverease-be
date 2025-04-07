@@ -8,6 +8,8 @@
       POSTGRES_DB: deliverease_db
     volumes:
       - db_data:/var/lib/postgresql/data
+    ports: 
+      - "5434:5432"
     networks:
       - backend
     healthcheck:
@@ -33,17 +35,17 @@
       - backend
       - web_app
   
-  view:
-    container_name: web_view
-    build:
-      context: .
-      dockerfile: View/Dockerfile
-    ports:
-      - "3000:3000"
-    depends_on:
-      - application
-    networks:
-      - web_app
+#  view:
+#    container_name: web_view
+#    build:
+#      context: .
+#      dockerfile: View/Dockerfile
+#    ports:
+#      - "3000:3000"
+#    depends_on:
+#      - application
+#    networks:
+#      - web_app
 
 networks:
   backend:

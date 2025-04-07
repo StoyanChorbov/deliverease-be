@@ -7,27 +7,20 @@ namespace Application.Controllers
 {
     [ApiController]
     [Route("/deliveries")]
-    public class DeliveriesController : ControllerBase
+    public class DeliveriesController(DelivereaseDbContext context) : ControllerBase
     {
-        private readonly DelivereaseDbContext _context;
-
-        public DeliveriesController(DelivereaseDbContext context)
-        {
-            _context = context;
-        }
-
         // GET: api/Deliveries
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Delivery>>> GetDeliveries()
         {
-            return await _context.Deliveries.ToListAsync();
+            return await context.Deliveries.ToListAsync();
         }
 
         // GET: api/Deliveries/5
         [HttpGet("{id:guid}")]
         public async Task<ActionResult<Delivery>> GetDelivery(Guid id)
         {
-            var delivery = await _context.Deliveries.FindAsync(id);
+            var delivery = await context.Deliveries.FindAsync(id);
 
             if (delivery == null)
             {
@@ -47,11 +40,11 @@ namespace Application.Controllers
                 return BadRequest();
             }
 
-            _context.Entry(delivery).State = EntityState.Modified;
+            context.Entry(delivery).State = EntityState.Modified;
 
             try
             {
-                await _context.SaveChangesAsync();
+                await context.SaveChangesAsync();
             }
             catch (DbUpdateConcurrencyException)
             {
@@ -73,8 +66,8 @@ namespace Application.Controllers
         [HttpPost]
         public async Task<ActionResult<Delivery>> AddDelivery(Delivery delivery)
         {
-            _context.Deliveries.Add(delivery);
-            await _context.SaveChangesAsync();
+            context.Deliveries.Add(delivery);
+            await context.SaveChangesAsync();
 
             return CreatedAtAction("GetDelivery", new { id = delivery.Id }, delivery);
         }
@@ -83,21 +76,21 @@ namespace Application.Controllers
         [HttpDelete("{id:guid}")]
         public async Task<IActionResult> DeleteDelivery(Guid id)
         {
-            var delivery = await _context.Deliveries.FindAsync(id);
+            var delivery = await context.Deliveries.FindAsync(id);
             if (delivery == null)
             {
                 return NotFound();
             }
 
-            _context.Deliveries.Remove(delivery);
-            await _context.SaveChangesAsync();
+            context.Deliveries.Remove(delivery);
+            await context.SaveChangesAsync();
 
             return NoContent();
         }
 
         private bool DeliveryExists(Guid id)
         {
-            return _context.Deliveries.Any(e => e.Id == id);
+            return context.Deliveries.Any(e => e.Id == id);
         }
     }
 }

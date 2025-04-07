@@ -58,6 +58,8 @@ public class Program
 
         app.MapControllers();
 
+        app.UseCors(policyBuilder => policyBuilder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
+
         app.Run();
     }
 }

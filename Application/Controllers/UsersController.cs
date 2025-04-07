@@ -1,32 +1,63 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
-using Model;
 using Model.DTO;
+using Service;
 
 namespace Application.Controllers;
 
 [ApiController]
 [Route("/users")]
-public class UsersController : ControllerBase
+public class UsersController(UserService userService) : ControllerBase
 {
-    private static readonly User TestUser = new User("pesho", "1234", "pesho", "peshov", "pesho@gmail.com");
-
-    private readonly ILogger<UsersController> _logger;
-
-    public UsersController(ILogger<UsersController> logger)
+    [HttpGet("{username}")]
+    public async Task<IActionResult> Get(string username)
     {
-        _logger = logger;
+        try
+        {
+            return Ok(await userService.Get(username));
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
-
+    
     [HttpGet]
-    public IActionResult Get()
+    public async Task<IActionResult> GetAll()
     {
-        return Ok(TestUser);
+        try
+        {
+            return Ok(await userService.GetAll());
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
     
     [HttpPost("register")]
-    public IActionResult Post([FromBody] UserRegisterDto user)
+    public async Task<IActionResult> Post([FromBody] UserRegisterDto user)
     {
-        return Ok(user);
+        try
+        {
+            return Created($"{user.Username}", await userService.Add(user));
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpDelete("{username}")]
+    public async Task<IActionResult> Delete(string username)
+    {
+        try
+        {
+            await userService.Delete(username);
+            return Ok();
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
     }
 }

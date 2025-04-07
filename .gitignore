@@ -128,6 +128,9 @@ riderModule.iml
 *.key
 *.pfx
 
+# Migrations
+#/Repository/Migrations
+
 # Nuxt dev/build outputs
 View/.output
 View/.data

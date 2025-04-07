@@ -10,4 +10,4 @@ public record UserRegisterDto(
     string LastName,
     [EmailAddress]
     string Email,
-    string Phone = "");
+    string PhoneNumber = "");
