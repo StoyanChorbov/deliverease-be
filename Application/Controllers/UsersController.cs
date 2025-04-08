@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Model.DTO;
 using Service;
@@ -9,6 +10,8 @@ namespace Application.Controllers;
 public class UsersController(UserService userService) : ControllerBase
 {
     [HttpGet("{username}")]
+    [Authorize(Roles = "Admin")]
+    // TODO: Swap with identity authorization
     public async Task<IActionResult> Get(string username)
     {
         try
@@ -33,13 +36,40 @@ public class UsersController(UserService userService) : ControllerBase
             return BadRequest(e.Message);
         }
     }
+
+    [HttpPost("login")]
+    public async Task<IActionResult> Login([FromBody] UserLoginDto userLoginDto)
+    {
+        try
+        {
+            // TODO: Swap with custom login method
+            return Ok(await userService.Get(userLoginDto.Username));
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
     
     [HttpPost("register")]
-    public async Task<IActionResult> Post([FromBody] UserRegisterDto user)
+    public async Task<IActionResult> Register([FromBody] UserRegisterDto user)
     {
         try
         {
             return Created($"{user.Username}", await userService.Add(user));
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    public async Task<IActionResult> Update(UserDto userDto)
+    {
+        try
+        {
+            var updatedUser = await userService.Update(userDto);
+            return Ok(updatedUser);
         }
         catch (Exception e)
         {

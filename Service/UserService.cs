@@ -47,14 +47,14 @@ public class UserService(UserRepository userRepository)
         }));
     }
     
-    public async Task<UserDto> Update(User user)
+    public async Task<UserDto> Update(UserDto user)
     {
         var existingUser = await userRepository.Get(user.Username);
         
         if (existingUser == null)
             throw new Exception("User not found");
         
-        return ToDto(await userRepository.Update(user));
+        return ToDto(await userRepository.Update(existingUser));
     }
     
     public async Task Delete(Guid id) =>
