@@ -5,31 +5,33 @@ namespace Model;
 
 public class Delivery : BaseEntity
 {
-    [Required]
-    public string StartingPoint { get; set; }
+    public string Name { get; set; }
     
-    [Required]
-    public string Destination { get; set; }
+    public string Description { get; set; }
     
-    [Required]
-    [ForeignKey("SenderId")]
+    public DeliveryCategory Category { get; set; }
+    
+    // [ForeignKey("SenderId")]
     public Guid SenderId { get; set; }
     public User Sender { get; set; }
     
-    [Required]
-    [ForeignKey("DelivererId")]
+    public List<User> Recipients { get; set; }
+    
+    // [ForeignKey("DelivererId")]
     public Guid DelivererId { get; set; }
     public User Deliverer { get; set; }
+    
+    public Guid StartingLocationId { get; set; }
+    public Location StartingLocation { get; set; }
+    
+    public Guid EndingLocationId { get; set; }
+    public Location EndingLocation { get; set; }
+    
+    public bool IsFragile { get; set; }
+    
+    public DateTime? DeliveryDate { get; set; }
 
     public Delivery()
     {
-    }
-    
-    public Delivery(string startingPoint, string destination, Guid senderId, Guid delivererId)
-    {
-        StartingPoint = startingPoint;
-        Destination = destination;
-        SenderId = senderId;
-        DelivererId = delivererId;
     }
 }

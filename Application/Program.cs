@@ -21,8 +21,12 @@ public class Program
         // Add services to the container.
         builder.Services.AddDbContext<DelivereaseDbContext>(options => { options.UseNpgsql(connectionString); });
 
+        builder.Services.AddIdentity<>();
+            
         builder.Services.AddScoped<UserRepository>();
         builder.Services.AddScoped<UserService>();
+
+        builder.Services.AddAuthentication();
         
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle

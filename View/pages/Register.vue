@@ -50,6 +50,8 @@ const confirmPasswordRules: ValidationRule[] = [
   },
 ];
 
+const isPasswordVisible = ref(false);
+
 const submit = () => {
   if (form.value?.validate()) {
     // Perform login action
@@ -72,7 +74,7 @@ const submit = () => {
               :rules="usernameRules"
               variant="outlined"
               label="Username"
-              class="w-100"
+              class="w-100 pb-1"
               required
           ></v-text-field>
           <v-text-field
@@ -80,7 +82,7 @@ const submit = () => {
               :rules="emailRules"
               variant="outlined"
               label="Email"
-              class="w-100"
+              class="w-100 pb-1"
               required
           ></v-text-field>
           <v-text-field
@@ -88,7 +90,7 @@ const submit = () => {
               :rules="firstNameRules"
               variant="outlined"
               label="First name"
-              class="w-100"
+              class="w-100 pb-1"
               required
           ></v-text-field>
           <v-text-field
@@ -96,7 +98,7 @@ const submit = () => {
               :rules="lastNameRules"
               variant="outlined"
               label="Last name"
-              class="w-100"
+              class="w-100 pb-1"
               required
           ></v-text-field>
           <v-text-field
@@ -104,27 +106,32 @@ const submit = () => {
               :rules="phoneNumberRules"
               variant="outlined"
               label="Phone number"
-              class="w-100"
+              class="w-100 pb-1"
               required
           ></v-text-field>
           <v-text-field
               v-model="password"
               :rules="passwordRules"
+              :append-inner-icon="isPasswordVisible ? 'mdi-eye' : 'mdi-eye-off'"
+              :type="isPasswordVisible ? 'text' : 'password'"
               variant="outlined"
               label="Password"
-              type="password"
-              class="w-100"
+              class="w-100 pb-1"
+              @click:append-inner="isPasswordVisible = !isPasswordVisible"
               required
           ></v-text-field>
           <v-text-field
               v-model="confirmPassword"
               :rules="confirmPasswordRules"
+              :append-inner-icon="isPasswordVisible ? 'mdi-eye' : 'mdi-eye-off'"
+              :type="isPasswordVisible ? 'text' : 'password'"
               variant="outlined"
               label="Confirm password"
-              type="password"
-              class="w-100"
+              class="w-100 pb-1"
+              @click:append-inner="isPasswordVisible = !isPasswordVisible"
               required
           ></v-text-field>
+          <p class="pb-2">Already have an account? <a href="/pages/Login">Login here</a></p>
           <v-btn @click="submit" variant="tonal" rounded="xl" color="primary">Register</v-btn>
         </v-form>
       </v-card-text>

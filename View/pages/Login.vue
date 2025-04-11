@@ -54,6 +54,7 @@ const submit = () => {
               class="w-100"
               required
           ></v-text-field>
+          <p>Don't have an account? <a class="pa-0 ma-0" href="/pages/Register">Register here</a></p>
           <v-btn @click="submit" variant="tonal" rounded="xl" color="primary">Login</v-btn>
         </v-form>
       </v-card-text>

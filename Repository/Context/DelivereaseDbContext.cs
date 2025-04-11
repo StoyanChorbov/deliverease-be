@@ -1,9 +1,10 @@
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using Model;
 
 namespace Repository.Context;
 
-public class DelivereaseDbContext : DbContext
+public class DelivereaseDbContext : IdentityDbContext<User>
 {
     public DbSet<User> Users { get; set; }
     public DbSet<Delivery> Deliveries { get; set; }

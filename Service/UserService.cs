@@ -1,5 +1,6 @@
 ﻿using Model;
 using Model.DTO;
+using Model.DTO.User;
 using Repository;
 
 namespace Service;
@@ -38,8 +39,8 @@ public class UserService(UserRepository userRepository)
         
         return ToDto(await userRepository.Add(new User
         {
-            Username = user.Username,
-            Password = user.Password,
+            UserName = user.Username,
+            // Password = user.Password,
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = user.Email,
@@ -64,5 +65,5 @@ public class UserService(UserRepository userRepository)
         await userRepository.Delete(username);
     
     private static UserDto ToDto(User user) =>
-        new UserDto(user.Username, user.FirstName, user.LastName, user.Email, user.PhoneNumber, user.IsDeliveryPerson);
+        new UserDto(user.UserName, user.FirstName, user.LastName, user.Email, user.PhoneNumber, user.IsDeliveryPerson);
 }

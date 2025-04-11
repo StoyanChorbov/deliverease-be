@@ -10,7 +10,7 @@ public class UserRepository(DelivereaseDbContext context)
         await context.Users.FindAsync(id);
     
     public async Task<User?> Get(string username) =>
-        await context.Users.FirstOrDefaultAsync(u => u.Username == username);
+        await context.Users.FirstOrDefaultAsync(u => u.UserName == username);
     
     public async Task<ICollection<User>> GetAll() =>
         await context.Users.ToListAsync();

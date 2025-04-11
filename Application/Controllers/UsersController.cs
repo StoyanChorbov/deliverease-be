@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Model.DTO;
+using Model.DTO.User;
 using Service;
 
 namespace Application.Controllers;
