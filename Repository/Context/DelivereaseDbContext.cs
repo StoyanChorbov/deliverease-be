@@ -6,7 +6,7 @@ namespace Repository.Context;
 
 public class DelivereaseDbContext : IdentityDbContext<User>
 {
-    public DbSet<User> Users { get; set; }
+    public DbSet<RefreshToken> RefreshTokens { get; set; }
     public DbSet<Delivery> Deliveries { get; set; }
 
     public DelivereaseDbContext()

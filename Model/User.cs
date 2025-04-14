@@ -16,6 +16,9 @@ public class User : IdentityUser
     public ICollection<Delivery> DelivererDeliveries { get; set; } = new List<Delivery>();
     public ICollection<Delivery> SenderDeliveries { get; set; } = new List<Delivery>();
     
+    public string? RefreshToken { get; set; }
+    public DateTime RefreshTokenExpiry { get; set; }
+    
     public User()
     {
     }

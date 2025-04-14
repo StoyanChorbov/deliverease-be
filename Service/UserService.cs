@@ -1,43 +1,101 @@
-﻿using Model;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Configuration;
+using Microsoft.IdentityModel.Tokens;
+using Model;
 using Model.DTO;
 using Model.DTO.User;
 using Repository;
 
 namespace Service;
 
-public class UserService(UserRepository userRepository)
+public class UserService
 {
+    private readonly UserRepository _userRepository;
+    private readonly UserManager<User> _userManager;
+    private readonly IConfiguration _configuration;
+    
+    public UserService(UserRepository userRepository, IConfiguration configuration, UserManager<User> userManager)
+    {
+        _userRepository = userRepository;
+        _configuration = configuration;
+        _userManager = userManager;
+    }
+    
     public async Task<UserDto> Get(Guid id)
     {
-        var user = await userRepository.Get(id);
-        
+        var user = await _userRepository.Get(id);
+
         if (user == null)
             throw new Exception("User not found");
-        
         return ToDto(user);
     }
     
     public async Task<UserDto> Get(string username)
     {
-        var user = await userRepository.Get(username);
+        var user = await _userRepository.Get(username);
         
         if (user == null)
             throw new Exception("User not found");
         
         return ToDto(user);
     }
+
+    public async Task<string?> Login(UserLoginDto userLoginDto)
+    {
+        var username = userLoginDto.Username;
+        var password = userLoginDto.Password;
+        var user = await _userManager.FindByNameAsync(username);
+
+        if (user == null || !await _userManager.CheckPasswordAsync(user, password))
+        {
+            return null;
+        }
+
+        var authToken = await GenerateAuthToken(user);
+        var refreshToken = GenerateRefreshToken();
+        
+        user.RefreshToken = refreshToken.Token;
+        user.RefreshTokenExpiry = refreshToken.Expires;
+
+        await _userManager.UpdateAsync(user);
+        
+        return new JwtSecurityTokenHandler().WriteToken(authToken);
+    }
+    
+    public async Task<string?> Refresh(string refreshToken)
+    {
+        var user = await _userRepository.GetByRefreshToken(refreshToken);
+
+        if (user == null || user.RefreshTokenExpiry < DateTime.Now)
+        {
+            throw new UnauthorizedAccessException("Invalid or expired refresh token!");
+        }
+
+        var authToken = await GenerateAuthToken(user);
+        var newRefreshToken = GenerateRefreshToken();
+        
+        user.RefreshToken = newRefreshToken.Token;
+        user.RefreshTokenExpiry = newRefreshToken.Expires;
+
+        await _userManager.UpdateAsync(user);
+        
+        return new JwtSecurityTokenHandler().WriteToken(authToken);
+    }
     
     public async Task<ICollection<UserDto>> GetAll() =>
-        (await userRepository.GetAll()).Select(ToDto).ToList();
+        (await _userRepository.GetAll()).Select(ToDto).ToList();
     
     public async Task<UserDto> Add(UserRegisterDto user)
     {
-        var existingUser = await userRepository.Get(user.Username);
+        var existingUser = await _userRepository.Get(user.Username);
         
         if (existingUser != null)
             throw new Exception("User already exists");
         
-        return ToDto(await userRepository.Add(new User
+        return ToDto(await _userRepository.Add(new User
         {
             UserName = user.Username,
             // Password = user.Password,
@@ -50,20 +108,55 @@ public class UserService(UserRepository userRepository)
     
     public async Task<UserDto> Update(UserDto user)
     {
-        var existingUser = await userRepository.Get(user.Username);
+        var existingUser = await _userRepository.Get(user.Username);
         
         if (existingUser == null)
             throw new Exception("User not found");
         
-        return ToDto(await userRepository.Update(existingUser));
+        return ToDto(await _userRepository.Update(existingUser));
     }
     
     public async Task Delete(Guid id) =>
-        await userRepository.Delete(id);
+        await _userRepository.Delete(id);
     
     public async Task Delete(string username) =>
-        await userRepository.Delete(username);
+        await _userRepository.Delete(username);
     
     private static UserDto ToDto(User user) =>
         new UserDto(user.UserName, user.FirstName, user.LastName, user.Email, user.PhoneNumber, user.IsDeliveryPerson);
+
+    private JwtSecurityToken GetToken(List<Claim> claims)
+    {
+        var key = new SymmetricSecurityKey("JWT:SecretKey"u8.ToArray());
+        var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+        var token = new JwtSecurityToken(
+            expires: DateTime.Now.AddHours(1),
+            claims: claims,
+            signingCredentials: credentials
+        );
+        return token;
+    }
+
+    private async Task<JwtSecurityToken> GenerateAuthToken(User user)
+    {
+        var claims = new List<Claim>
+        {
+            new(ClaimTypes.Name, user.UserName ?? throw new Exception("User has no username")),
+            new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+        };
+        
+        var roles = await _userManager.GetRolesAsync(user);
+        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+
+        return GetToken(claims);
+    }
+
+    private RefreshToken GenerateRefreshToken()
+    {
+        return new RefreshToken
+        {
+            Token = Guid.NewGuid().ToString(),
+            Expires = DateTime.UtcNow.AddDays(7)
+        };
+    }
 }

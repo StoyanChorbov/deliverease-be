@@ -15,6 +15,9 @@ public class UserRepository(DelivereaseDbContext context)
     public async Task<ICollection<User>> GetAll() =>
         await context.Users.ToListAsync();
     
+    public async Task<User?> GetByRefreshToken(string refreshToken) =>
+        await context.Users.FirstOrDefaultAsync(u => u.RefreshToken == refreshToken);
+    
     public async Task<User> Add(User user)
     {
         var result = await context.Users.AddAsync(user);

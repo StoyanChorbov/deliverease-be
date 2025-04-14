@@ -11,8 +11,7 @@ namespace Application.Controllers;
 public class UsersController(UserService userService) : ControllerBase
 {
     [HttpGet("{username}")]
-    [Authorize(Roles = "Admin")]
-    // TODO: Swap with identity authorization
+    [Authorize]
     public async Task<IActionResult> Get(string username)
     {
         try
@@ -41,15 +40,12 @@ public class UsersController(UserService userService) : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] UserLoginDto userLoginDto)
     {
-        try
-        {
-            // TODO: Swap with custom login method
-            return Ok(await userService.Get(userLoginDto.Username));
-        }
-        catch (Exception e)
-        {
-            return BadRequest(e.Message);
-        }
+        var token = await userService.Login(userLoginDto);
+        
+        if (token == null)
+            return Unauthorized();
+        
+        return Ok(token);
     }
     
     [HttpPost("register")]
@@ -63,6 +59,17 @@ public class UsersController(UserService userService) : ControllerBase
         {
             return BadRequest(e.Message);
         }
+    }
+    
+    [HttpPost("refresh")]
+    public async Task<IActionResult> RefreshToken([FromBody] string refreshToken)
+    {
+        var token = await userService.Refresh(refreshToken);
+        
+        if (token == null)
+            return Unauthorized();
+        
+        return Ok(token);
     }
 
     public async Task<IActionResult> Update(UserDto userDto)
