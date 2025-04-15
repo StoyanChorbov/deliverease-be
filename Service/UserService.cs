@@ -17,11 +17,11 @@ public class UserService
     private readonly UserManager<User> _userManager;
     private readonly IConfiguration _configuration;
 
-    public UserService(UserRepository userRepository, IConfiguration configuration, UserManager<User> userManager)
+    public UserService(UserRepository userRepository, UserManager<User> userManager, IConfiguration configuration)
     {
         _userRepository = userRepository;
-        _configuration = configuration;
         _userManager = userManager;
+        _configuration = configuration;
     }
 
     public async Task<UserDto> Get(Guid id)
@@ -104,7 +104,6 @@ public class UserService
         return ToDto(await _userRepository.Add(new User
         {
             UserName = user.Username,
-            // Password = user.Password,
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = user.Email,
@@ -129,9 +128,9 @@ public class UserService
         await _userRepository.Delete(username);
 
     private static UserDto ToDto(User user) =>
-        new UserDto(user.UserName, user.FirstName, user.LastName, user.Email, user.PhoneNumber, user.IsDeliveryPerson);
+        new(user.UserName, user.FirstName, user.LastName, user.Email, user.PhoneNumber, user.IsDeliveryPerson);
 
-    private JwtSecurityToken GetToken(List<Claim> claims)
+    private static JwtSecurityToken GetToken(List<Claim> claims)
     {
         var key = new SymmetricSecurityKey("JWT:SecretKey"u8.ToArray());
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -157,7 +156,7 @@ public class UserService
         return GetToken(claims);
     }
 
-    private RefreshToken GenerateRefreshToken()
+    private static RefreshToken GenerateRefreshToken()
     {
         return new RefreshToken
         {

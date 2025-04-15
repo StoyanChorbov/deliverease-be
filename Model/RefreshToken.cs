@@ -1,7 +1,10 @@
+using System.ComponentModel.DataAnnotations;
+
 namespace Model;
 
 public class RefreshToken
 {
+    [Key]
     public string Token { get; set; } = "";
     public DateTime Expires { get; set; }
 

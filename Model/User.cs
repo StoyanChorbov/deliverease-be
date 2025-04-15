@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace Model;
 
-public class User : IdentityUser
+public class User : IdentityUser<Guid>
 {
     [Required]
     public string FirstName { get; set; }
@@ -13,8 +13,9 @@ public class User : IdentityUser
     
     public bool IsDeliveryPerson { get; set; }
     
-    public ICollection<Delivery> DelivererDeliveries { get; set; } = new List<Delivery>();
-    public ICollection<Delivery> SenderDeliveries { get; set; } = new List<Delivery>();
+    public ICollection<Delivery> DelivererDeliveries { get; } = new List<Delivery>();
+    public ICollection<Delivery> SenderDeliveries { get; } = new List<Delivery>();
+    public ICollection<Delivery> RecipientDeliveries { get; } = new List<Delivery>();
     
     public string? RefreshToken { get; set; }
     public DateTime RefreshTokenExpiry { get; set; }
