@@ -40,12 +40,15 @@ public class UsersController(UserService userService) : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] UserLoginDto userLoginDto)
     {
-        var token = await userService.Login(userLoginDto);
-        
-        if (token == null)
+        var result = await userService.Login(userLoginDto);
+        if (result == null)
             return Unauthorized();
         
-        return Ok(token);
+        var (token, refreshToken) = result;
+        if (token == null || refreshToken == null)
+            return Unauthorized();
+        
+        return Ok(new {token, refreshToken});
     }
     
     [HttpPost("register")]
@@ -64,9 +67,12 @@ public class UsersController(UserService userService) : ControllerBase
     [HttpPost("refresh")]
     public async Task<IActionResult> RefreshToken([FromBody] string refreshToken)
     {
-        var token = await userService.Refresh(refreshToken);
+        var result = await userService.Refresh(refreshToken);
+        if (result == null)
+            return Unauthorized();
         
-        if (token == null)
+        var (token, newRefreshToken) = result;
+        if (token == null || newRefreshToken == null)
             return Unauthorized();
         
         return Ok(token);
