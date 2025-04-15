@@ -16,6 +16,8 @@ public class User : IdentityUser<Guid>
     public ICollection<Delivery> DelivererDeliveries { get; } = new List<Delivery>();
     public ICollection<Delivery> SenderDeliveries { get; } = new List<Delivery>();
     public ICollection<Delivery> RecipientDeliveries { get; } = new List<Delivery>();
+
+    public ICollection<JwtToken> JwtTokens { get; } = new List<JwtToken>();
     
     public string? RefreshToken { get; set; }
     public DateTime RefreshTokenExpiry { get; set; }

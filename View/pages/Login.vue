@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import {ref} from 'vue';
 import type {ValidationRule} from "vuetify/framework";
+import {useAuth} from "~/composables/useAuth";
+
+const { login } = useAuth();
 
 const form = ref<HTMLFormElement>();
 
@@ -20,9 +23,10 @@ const passwordRules: ValidationRule[] = [
   },
 ]
 
-const submit = () => {
+const submit = async () => {
   if (form.value?.validate()) {
     // Perform login action
+    await login(email.value, password.value);
     console.log('Login successful');
   } else {
     console.log('Login failed');

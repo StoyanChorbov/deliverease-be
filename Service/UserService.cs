@@ -2,6 +2,7 @@
 using System.Security.Claims;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Model;
@@ -45,7 +46,7 @@ public class UserService
 
     public async Task<Tuple<string?, string?>?> Login(UserLoginDto userLoginDto)
     {
-        var username = userLoginDto.Username;
+        var username = _userManager.NormalizeName(userLoginDto.Username);
         var password = userLoginDto.Password;
         var user = await _userManager.FindByNameAsync(username);
 
@@ -62,8 +63,10 @@ public class UserService
 
         await _userManager.UpdateAsync(user);
 
+        var tokenResult = new JwtSecurityTokenHandler().WriteToken(authToken);
+
         return new Tuple<string?, string?>(
-            new JwtSecurityTokenHandler().WriteToken(authToken),
+            tokenResult,
             refreshToken.Token
         );
     }
@@ -94,21 +97,29 @@ public class UserService
     public async Task<ICollection<UserDto>> GetAll() =>
         (await _userRepository.GetAll()).Select(ToDto).ToList();
 
-    public async Task<UserDto> Add(UserRegisterDto user)
+    public async Task Register(UserRegisterDto user)
     {
         var existingUser = await _userRepository.Get(user.Username);
 
         if (existingUser != null)
             throw new Exception("User already exists");
 
-        return ToDto(await _userRepository.Add(new User
+        var newUser = new User
         {
             UserName = user.Username,
             FirstName = user.FirstName,
             LastName = user.LastName,
             Email = user.Email,
             PhoneNumber = user.PhoneNumber
-        }));
+        };
+
+        var result = await _userManager.CreateAsync(newUser, user.Password);
+        
+        if (!result.Succeeded)
+        {
+            var errors = string.Join(", ", result.Errors.Select(e => e.Description));
+            throw new Exception($"Failed to create user: {errors}");
+        }
     }
 
     public async Task<UserDto> Update(UserDto user)
@@ -130,9 +141,10 @@ public class UserService
     private static UserDto ToDto(User user) =>
         new(user.UserName, user.FirstName, user.LastName, user.Email, user.PhoneNumber, user.IsDeliveryPerson);
 
-    private static JwtSecurityToken GetToken(List<Claim> claims)
+    private JwtSecurityToken GetToken(List<Claim> claims)
     {
-        var key = new SymmetricSecurityKey("JWT:SecretKey"u8.ToArray());
+        var secretKey = _configuration["JWT:SecretKey"] ?? throw new Exception("Secret key not found");
+        var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var token = new JwtSecurityToken(
             expires: DateTime.Now.AddHours(1),
@@ -150,8 +162,8 @@ public class UserService
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
 
-        var roles = await _userManager.GetRolesAsync(user);
-        claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
+        // var roles = await _userManager.GetRolesAsync(user);
+        // claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
         return GetToken(claims);
     }

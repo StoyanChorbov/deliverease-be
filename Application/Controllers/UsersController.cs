@@ -48,15 +48,16 @@ public class UsersController(UserService userService) : ControllerBase
         if (token == null || refreshToken == null)
             return Unauthorized();
         
-        return Ok(new {token, refreshToken});
+        return Ok(new { accessToken = token, refreshToken = refreshToken });
     }
     
-    [HttpPost("register")]
+    [HttpPost]
     public async Task<IActionResult> Register([FromBody] UserRegisterDto user)
     {
         try
         {
-            return Created($"{user.Username}", await userService.Add(user));
+            await userService.Register(user);
+            return Ok();
         }
         catch (Exception e)
         {
@@ -75,7 +76,7 @@ public class UsersController(UserService userService) : ControllerBase
         if (token == null || newRefreshToken == null)
             return Unauthorized();
         
-        return Ok(token);
+        return Ok(new { accessToken = token, refreshToken = newRefreshToken });
     }
 
     public async Task<IActionResult> Update(UserDto userDto)

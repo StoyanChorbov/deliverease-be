@@ -12,9 +12,7 @@
   "dependencies": {
     "@mdi/font": "^7.4.47",
     "@tailwindcss/vite": "^4.1.3",
-    "@vueuse/integrations": "^13.1.0",
     "nuxt": "3.16.0",
-    "nuxt-storage": "^1.2.2",
     "tailwindcss": "^4.1.3",
     "vue": "latest",
     "vue-router": "latest"
