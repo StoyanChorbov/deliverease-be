@@ -15,7 +15,7 @@ public class DesignTimeDbContextFactory : IDesignTimeDbContextFactory<Delivereas
         var configuration = builder.Build();
 
         var connectionString = configuration.GetConnectionString("DefaultConnection");
-        
+
         var optionsBuilder = new DbContextOptionsBuilder<DelivereaseDbContext>();
         optionsBuilder.UseNpgsql(connectionString);
 

@@ -1,96 +1,59 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Model;
-using Repository.Context;
+using Model.DTO.Delivery;
+using Service;
 
-namespace Application.Controllers
+namespace Application.Controllers;
+
+[ApiController]
+[Route("/deliveries")]
+[Authorize]
+public class DeliveriesController(DeliveryService deliveryService) : ControllerBase
 {
-    [ApiController]
-    [Route("/deliveries")]
-    public class DeliveriesController(DelivereaseDbContext context) : ControllerBase
+    // GET: api/Deliveries
+    [HttpGet]
+    public async Task<ActionResult<List<Delivery>>> GetDeliveries()
     {
-        // GET: api/Deliveries
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Delivery>>> GetDeliveries()
-        {
-            return await context.Deliveries.ToListAsync();
-        }
+        var deliveries = await deliveryService.GetAllDeliveriesAsync();
+        return Ok(deliveries);
+    }
 
-        // GET: api/Deliveries/5
-        [HttpGet("{id:guid}")]
-        public async Task<ActionResult<Delivery>> GetDelivery(Guid id)
-        {
-            var delivery = await context.Deliveries.FindAsync(id);
+    // GET: api/Deliveries/5
+    [HttpGet("{id:guid}")]
+    public async Task<ActionResult<DeliveryDto>> GetDelivery(Guid id)
+    {
+        return await deliveryService.GetDeliveryAsync(id);
+    }
 
-            if (delivery == null)
-            {
-                return NotFound();
-            }
+    // PUT: api/Deliveries/5
+    [HttpPatch("{id:guid}")]
+    public async Task<IActionResult> UpdateDelivery(Guid id, DeliveryDto deliveryDto)
+    {
+        await deliveryService.UpdateDeliveryAsync(id, deliveryDto);
+        return Ok();
+    }
 
-            return delivery;
-        }
+    // POST: api/Deliveries
+    [HttpPost]
+    public async Task<IActionResult> AddDelivery([FromBody] DeliveryAddDto deliveryAddDto,
+        [FromHeader] string authorization)
+    {
+        Console.WriteLine(authorization);
 
-        // PUT: api/Deliveries/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPatch("{id:guid}")]
-        public async Task<IActionResult> UpdateDelivery(Guid id, Delivery delivery)
-        {
-            if (id != delivery.Id)
-            {
-                return BadRequest();
-            }
+        var hasTokenExpired = UserService.CheckTokenValidity(authorization);
+        if (hasTokenExpired != null)
+            return Unauthorized(hasTokenExpired);
 
-            context.Entry(delivery).State = EntityState.Modified;
+        await deliveryService.AddDeliveryAsync(deliveryAddDto, authorization);
+        return Ok();
+    }
 
-            try
-            {
-                await context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!DeliveryExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-
-            return NoContent();
-        }
-
-        // POST: api/Deliveries
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Delivery>> AddDelivery(Delivery delivery)
-        {
-            context.Deliveries.Add(delivery);
-            await context.SaveChangesAsync();
-
-            return CreatedAtAction("GetDelivery", new { id = delivery.Id }, delivery);
-        }
-
-        // DELETE: api/Deliveries/5
-        [HttpDelete("{id:guid}")]
-        public async Task<IActionResult> DeleteDelivery(Guid id)
-        {
-            var delivery = await context.Deliveries.FindAsync(id);
-            if (delivery == null)
-            {
-                return NotFound();
-            }
-
-            context.Deliveries.Remove(delivery);
-            await context.SaveChangesAsync();
-
-            return NoContent();
-        }
-
-        private bool DeliveryExists(Guid id)
-        {
-            return context.Deliveries.Any(e => e.Id == id);
-        }
+    // DELETE: api/Deliveries/5
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteDelivery(Guid id)
+    {
+        await deliveryService.DeleteDeliveryAsync(id);
+        return NoContent();
     }
 }

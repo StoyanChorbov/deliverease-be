@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Model.DTO;
+using Model;
 using Model.DTO.User;
 using Service;
 
@@ -23,8 +23,9 @@ public class UsersController(UserService userService) : ControllerBase
             return BadRequest(e.Message);
         }
     }
-    
+
     [HttpGet]
+    [Authorize(Roles = UserRoles.Admin)]
     public async Task<IActionResult> GetAll()
     {
         try
@@ -43,14 +44,14 @@ public class UsersController(UserService userService) : ControllerBase
         var result = await userService.Login(userLoginDto);
         if (result == null)
             return Unauthorized();
-        
+
         var (token, refreshToken) = result;
         if (token == null || refreshToken == null)
             return Unauthorized();
-        
-        return Ok(new { accessToken = token, refreshToken = refreshToken });
+
+        return Ok(new { accessToken = token, refreshToken });
     }
-    
+
     [HttpPost]
     public async Task<IActionResult> Register([FromBody] UserRegisterDto user)
     {
@@ -64,26 +65,33 @@ public class UsersController(UserService userService) : ControllerBase
             return BadRequest(e.Message);
         }
     }
-    
+
     [HttpPost("refresh")]
+    [Authorize]
     public async Task<IActionResult> RefreshToken([FromBody] string refreshToken)
     {
         var result = await userService.Refresh(refreshToken);
         if (result == null)
             return Unauthorized();
-        
+
         var (token, newRefreshToken) = result;
         if (token == null || newRefreshToken == null)
             return Unauthorized();
-        
+
         return Ok(new { accessToken = token, refreshToken = newRefreshToken });
     }
 
-    public async Task<IActionResult> Update(UserDto userDto)
+    [HttpPut]
+    [Authorize]
+    public async Task<IActionResult> Update([FromBody] UserDto userDto)
     {
         try
         {
             var updatedUser = await userService.Update(userDto);
+
+            if (updatedUser == null)
+                return NotFound();
+
             return Ok(updatedUser);
         }
         catch (Exception e)
@@ -93,6 +101,7 @@ public class UsersController(UserService userService) : ControllerBase
     }
 
     [HttpDelete("{username}")]
+    [Authorize(Roles = UserRoles.Admin)]
     public async Task<IActionResult> Delete(string username)
     {
         try

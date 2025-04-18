@@ -16,7 +16,7 @@ export const useAuth = () => {
     };
 
     const login = async (username: string, password: string) => {
-        const {data, err} = await useFetch<LoginResponse>('/api/auth/login', {
+        const {data, error} = await useFetch<LoginResponse>('/api/auth/login', {
             method: 'POST',
             body: {
                 username,
@@ -25,25 +25,30 @@ export const useAuth = () => {
         });
 
         // TODO: Improve error handling
-        if (err.value) throw err.value;
+        if (error.value) throw error.value;
 
-        const {access, refresh} = data;
+        if (data.value == null) throw new Error('Unable to login');
 
-        setTokens(access, refresh);
+        const {accessToken, refreshToken} = data.value;
+
+        setTokens(accessToken, refreshToken);
+
+        console.log(getAccessToken());
+        console.log(getRefreshToken());
     }
 
     const logout = () => {
         clearTokens()
     };
 
-    const isLoggedIn = computed(() => getAccessToken() !== null);
+    const isAuthenticated = computed(() => getAccessToken() !== null);
 
     return {
         login,
         logout,
         getAccessToken,
         getRefreshToken,
-        isLoggedIn,
+        isAuthenticated,
     }
 }
 

@@ -12,7 +12,7 @@ namespace Application;
 
 public class Program
 {
-    public static void Main(string[] args)
+    public static async Task Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
 
@@ -29,8 +29,9 @@ public class Program
         builder.Services.AddIdentity<User, IdentityRole<Guid>>()
             .AddEntityFrameworkStores<DelivereaseDbContext>()
             .AddDefaultTokenProviders();
-            
+
         builder.Services.AddScoped<UserRepository>();
+        builder.Services.AddScoped<TokenRepository>();
         builder.Services.AddScoped<UserService>();
 
         builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -45,12 +46,13 @@ public class Program
                     ValidIssuer = builder.Configuration["Jwt:Issuer"],
                     ValidAudience = builder.Configuration["Jwt:Audience"],
                     IssuerSigningKey =
-                        new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"] ?? string.Empty))
+                        new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"] ?? string.Empty))
                 };
             });
 
         builder.Services.AddAuthorization();
-        
+
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
@@ -67,11 +69,7 @@ public class Program
 
         var app = builder.Build();
 
-        using (var scope = app.Services.CreateScope())
-        {
-            var dbContext = scope.ServiceProvider.GetRequiredService<DelivereaseDbContext>();
-            dbContext.Database.Migrate();
-        }
+        await SeedDatabase(app.Services);
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
@@ -88,6 +86,15 @@ public class Program
 
         app.UseCors(policyBuilder => policyBuilder.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
 
-        app.Run();
+        await app.RunAsync();
+    }
+
+    private static async Task SeedDatabase(IServiceProvider serviceProvider)
+    {
+        using var scope = serviceProvider.CreateScope();
+        var context = scope.ServiceProvider.GetRequiredService<DelivereaseDbContext>();
+        await context.Database.MigrateAsync();
+        await context.Roles.AddAsync(new IdentityRole<Guid>(UserRoles.User));
+        await context.Roles.AddAsync(new IdentityRole<Guid>(UserRoles.Admin));
     }
 }

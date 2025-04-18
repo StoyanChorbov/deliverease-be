@@ -4,10 +4,6 @@ namespace Model;
 
 public class RefreshToken
 {
-    [Key]
-    public string Token { get; set; } = "";
-    public DateTime Expires { get; set; }
-
     public RefreshToken()
     {
     }
@@ -17,4 +13,8 @@ public class RefreshToken
         Token = token;
         Expires = expires;
     }
+
+    [Key] public string Token { get; set; } = "";
+
+    public DateTime Expires { get; set; }
 }

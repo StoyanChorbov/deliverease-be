@@ -8,16 +8,16 @@
       POSTGRES_DB: deliverease_db
     volumes:
       - db_data:/var/lib/postgresql/data
-    ports: 
+    ports:
       - "5434:5432"
     networks:
       - backend
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U deliverease_db_user"]
+      test: [ "CMD-SHELL", "pg_isready -U deliverease_db_user" ]
       interval: 10s
       timeout: 5s
       retries: 5
-      
+  
   application:
     container_name: application
     build:
@@ -34,7 +34,7 @@
     networks:
       - backend
       - web_app
-  
+
 #  view:
 #    container_name: web_view
 #    build:

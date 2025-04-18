@@ -12,6 +12,7 @@
   "dependencies": {
     "@mdi/font": "^7.4.47",
     "@tailwindcss/vite": "^4.1.3",
+    "mapbox-gl": "^3.11.0",
     "nuxt": "3.16.0",
     "tailwindcss": "^4.1.3",
     "vue": "latest",

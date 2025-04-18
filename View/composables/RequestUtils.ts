@@ -1,0 +1,1 @@
+export const baseUrl = "https://deliverease-s39n.onrender.com";

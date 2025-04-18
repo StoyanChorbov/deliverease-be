@@ -1,4 +1,4 @@
-import type {DeliveryCategory} from "~/components/delivery/types/DeliveryCategory";
+import type {DeliveryCategory} from "~/composables/delivery/types/DeliveryCategory";
 
 export interface AddDeliveryInfoDto {
     packageName: string;

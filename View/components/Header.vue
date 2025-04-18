@@ -3,14 +3,14 @@
 </script>
 
 <template>
-  <header>
-    <nav>
-      <ul class="d-flex justify-space-around bg-black">
-        <a href="/" class="text-decoration-none text-blue">Home</a>
-        <a href="/deliveries/add" class="text-decoration-none">Add delivery</a>
-        <a href="/register" class="text-decoration-none">Register</a>
-        <a href="/login" class="text-decoration-none">Login</a>
-      </ul>
-    </nav>
-  </header>
+    <header>
+        <nav>
+            <ul class="d-flex justify-space-around bg-black">
+                <li><NuxtLink to="/" class="text-decoration-none text-blue">Home</NuxtLink></li>
+                <li><NuxtLink to="/deliveries/add" class="text-decoration-none">Add delivery</NuxtLink></li>
+                <li><NuxtLink href="/register" class="text-decoration-none">Register</NuxtLink></li>
+                <li><NuxtLink href="/login" class="text-decoration-none">Login</NuxtLink></li>
+            </ul>
+        </nav>
+    </header>
 </template>
