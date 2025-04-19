@@ -1,4 +1,6 @@
 using System.Text;
+using Application.Hubs;
+using Application.Util;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -30,28 +32,14 @@ public class Program
             .AddEntityFrameworkStores<DelivereaseDbContext>()
             .AddDefaultTokenProviders();
 
-        builder.Services.AddScoped<UserRepository>();
-        builder.Services.AddScoped<TokenRepository>();
-        builder.Services.AddScoped<UserService>();
+        builder.Services
+            .AddRepositoryConfig()
+            .AddServiceConfig();
 
-        builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
-            {
-                options.TokenValidationParameters = new TokenValidationParameters
-                {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = builder.Configuration["Jwt:Issuer"],
-                    ValidAudience = builder.Configuration["Jwt:Audience"],
-                    IssuerSigningKey =
-                        new SymmetricSecurityKey(
-                            Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"] ?? string.Empty))
-                };
-            });
-
+        builder.Services.AddAuthenticationConfig(builder.Configuration);
         builder.Services.AddAuthorization();
+
+        builder.Services.AddSignalR();
 
         builder.Services.AddControllers();
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -80,7 +68,10 @@ public class Program
 
         app.UseHttpsRedirection();
 
+        app.UseAuthentication();
         app.UseAuthorization();
+
+        app.MapHub<LocationsHub>("/hubs/locations");
 
         app.MapControllers();
 
@@ -93,8 +84,14 @@ public class Program
     {
         using var scope = serviceProvider.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<DelivereaseDbContext>();
+        var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<IdentityRole<Guid>>>();
         await context.Database.MigrateAsync();
-        await context.Roles.AddAsync(new IdentityRole<Guid>(UserRoles.User));
-        await context.Roles.AddAsync(new IdentityRole<Guid>(UserRoles.Admin));
+        
+        if (await context.Roles.AnyAsync())
+            return;
+        
+        await roleManager.CreateAsync(new IdentityRole<Guid>(UserRoles.User));
+        await roleManager.CreateAsync(new IdentityRole<Guid>(UserRoles.Admin));
+        await context.SaveChangesAsync();
     }
 }

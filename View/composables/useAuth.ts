@@ -1,22 +1,22 @@
 export const useAuth = () => {
-    const accessToken = 'accessToken';
-    const refreshToken = 'refreshToken';
+    const accessToken = useCookie('accessToken');
+    const refreshToken = useCookie('refreshToken');
 
     const setTokens = (access: string, refresh: string) => {
-        localStorage.setItem(accessToken, access);
-        localStorage.setItem(refreshToken, refresh);
+        accessToken.value = access;
+        refreshToken.value = refresh;
     }
 
-    const getAccessToken = () => localStorage.getItem(accessToken);
-    const getRefreshToken = () => localStorage.getItem(refreshToken);
+    const getAccessToken = () => accessToken.value;
+    const getRefreshToken = () => refreshToken.value;
 
     const clearTokens = () => {
-        localStorage.removeItem(accessToken);
-        localStorage.removeItem(refreshToken);
+        accessToken.value = null;
+        refreshToken.value = null;
     };
 
     const login = async (username: string, password: string) => {
-        const {data, error} = await useFetch<LoginResponse>('/api/auth/login', {
+        const {data, error} = await useFetch<LoginResponse>(`${baseUrl}/users/login`, {
             method: 'POST',
             body: {
                 username,
@@ -28,6 +28,8 @@ export const useAuth = () => {
         if (error.value) throw error.value;
 
         if (data.value == null) throw new Error('Unable to login');
+
+        console.log(data.value);
 
         const {accessToken, refreshToken} = data.value;
 
@@ -41,7 +43,7 @@ export const useAuth = () => {
         clearTokens()
     };
 
-    const isAuthenticated = computed(() => getAccessToken() !== null);
+    const isAuthenticated = computed(() => getAccessToken() !== null && getAccessToken() !== undefined);
 
     return {
         login,

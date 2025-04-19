@@ -7,27 +7,32 @@ const {login} = useAuth();
 
 const form = ref<HTMLFormElement>();
 
-const email = ref('');
-const emailRules: ValidationRule[] = [
+const username = ref('');
+const usernameRules: ValidationRule[] = [
     input => {
-        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        return emailPattern.test(input) || 'Invalid email format';
-    },
+        const minLength = 5;
+        return input.length >= minLength || `Username must be at least ${minLength} characters long`;
+    }
 ]
 
 const password = ref('');
 const isPasswordVisible = ref(false);
 const passwordRules: ValidationRule[] = [
-    (input: String) => {
+    (input: string) => {
         const minLength = 8;
         return input.length >= minLength || `Password must be at least ${minLength} characters long`;
     },
+    (input: string) => {
+        const hasAlphanumerical = /[a-zA-Z0-9]/.test(input);
+        const hasSymbol = /[!@#$%^&*(),.?":{}|<>]/.test(input);
+        return (hasAlphanumerical && hasSymbol) || 'Password must contain at least one uppercase letter, one lowercase letter, one number, and a special symbol';
+    }
 ]
 
 const submit = async () => {
     if (form.value?.validate()) {
         // Perform login action
-        await login(email.value, password.value);
+        await login(username.value, password.value);
         console.log('Login successful');
     } else {
         console.log('Login failed');
@@ -43,10 +48,10 @@ const submit = async () => {
             <v-card-text>
                 <v-form class="d-flex flex-column align-center justify-center" ref="form" lazy-validation>
                     <v-text-field
-                        v-model="email"
-                        :rules="emailRules"
+                        v-model="username"
+                        :rules="usernameRules"
                         variant="outlined"
-                        label="Email"
+                        label="Username"
                         class="w-100"
                         required
                     ></v-text-field>

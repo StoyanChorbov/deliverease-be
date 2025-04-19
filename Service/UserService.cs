@@ -66,7 +66,8 @@ public class UserService(
         {
             Token = authToken,
             RefreshToken = refreshToken.Token,
-            RefreshTokenExpiry = refreshToken.Expires
+            RefreshTokenExpiry = refreshToken.Expires,
+            UserId = user.Id
         };
 
         await tokenRepository.AddAsync(token);
