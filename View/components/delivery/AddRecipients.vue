@@ -1,8 +1,9 @@
 <script setup lang="ts">
-const recipients = ref<string[]>(["Ivan", "Gosho"]);
+const recipients = ref<string[]>([]);
 const currentRecipient = ref<string>("");
 
 interface AddRecipientsProps {
+    error?: string;
     addRecipientsHandler: (recipients: string[]) => void;
 }
 
@@ -40,8 +41,9 @@ const removeRecipient = (recipient: string) => {
                 <v-btn variant="plain" @click="removeRecipient(recipient)" icon="mdi-delete"/>
             </template>
         </v-text-field>
-        <v-btn @click="props.addRecipientsHandler(recipients)" variant="outlined" rounded="xl" color="primary">Add
-            recipients
+        <p v-if="error">{{ error }}</p>
+        <v-btn @click="props.addRecipientsHandler(recipients)" variant="outlined" rounded="xl" color="primary">
+            Create delivery
         </v-btn>
     </v-container>
 </template>

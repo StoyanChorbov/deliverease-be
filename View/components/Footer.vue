@@ -1,7 +1,5 @@
 <script setup lang="ts">
-const deliveries = [
-
-]
+// TODO: Implement the footer component
 </script>
 
 <template>

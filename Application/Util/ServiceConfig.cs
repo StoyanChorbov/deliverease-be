@@ -8,6 +8,19 @@ namespace Application.Util;
 
 public static class ServiceConfig
 {
+    private static readonly ILogger Logger;
+
+    static ServiceConfig()
+    {
+        var loggerFactory = LoggerFactory.Create(builder =>
+        {
+            builder.AddConsole();
+            builder.AddDebug();
+        });
+        
+        Logger = loggerFactory.CreateLogger("ServiceConfigLogger");
+    }
+    
     public static IServiceCollection AddRepositoryConfig(this IServiceCollection services)
     {
         services.AddScoped<UserRepository>();
@@ -29,15 +42,21 @@ public static class ServiceConfig
     (this IServiceCollection services,
         IConfiguration configuration)
     {
-        var jwtIssuer = configuration["Jwt:Issuer"] ?? string.Empty;
-        var jwtAudience = configuration["Jwt:Audience"] ?? string.Empty;
-        var jwtSecret = configuration["Jwt:Secret"] ?? string.Empty;
+        var jwtIssuer = configuration["JWT:Issuer"] ?? string.Empty;
+        var jwtAudience = configuration["JWT:Audience"] ?? string.Empty;
+        var jwtSecret = configuration["JWT:Secret"] ?? string.Empty;
 
-        services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+        services
+            .AddAuthentication(options =>
+            {
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
             .AddJwtBearer(options =>
             {
                 options.TokenValidationParameters = GetTokenValidationParameters(jwtIssuer, jwtAudience, jwtSecret);
                 options.Events = GetJwtBearerEvents();
+                options.IncludeErrorDetails = true;
             });
 
         return services;
@@ -49,18 +68,18 @@ public static class ServiceConfig
         var encodedJwtSecret = Encoding.UTF8.GetBytes(jwtSecret);
         return new TokenValidationParameters
         {
-            ValidateIssuer = true,
-            ValidateAudience = true,
+            ValidateIssuer = false,
+            ValidateAudience = false,
             ValidateLifetime = true,
             ValidateIssuerSigningKey = true,
-            ValidIssuer = jwtIssuer,
-            ValidAudience = jwtAudience,
+            // ValidIssuer = jwtIssuer,
+            // ValidAudience = jwtAudience,
             IssuerSigningKey = new SymmetricSecurityKey(encodedJwtSecret)
         };
     }
 
     private static JwtBearerEvents GetJwtBearerEvents() =>
-        new JwtBearerEvents
+        new()
         {
             OnMessageReceived = context =>
             {

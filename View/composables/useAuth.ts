@@ -1,3 +1,5 @@
+import {baseUrl} from "~/composables/useApi";
+
 export const useAuth = () => {
     const accessToken = useCookie('accessToken');
     const refreshToken = useCookie('refreshToken');
@@ -29,25 +31,22 @@ export const useAuth = () => {
 
         if (data.value == null) throw new Error('Unable to login');
 
-        console.log(data.value);
-
         const {accessToken, refreshToken} = data.value;
 
         setTokens(accessToken, refreshToken);
-
-        console.log(getAccessToken());
-        console.log(getRefreshToken());
     }
 
     const logout = () => {
         clearTokens()
     };
 
-    const isAuthenticated = computed(() => getAccessToken() !== null && getAccessToken() !== undefined);
+    const isAuthenticated = computed(() => accessToken.value !== null && accessToken.value !== undefined);
 
     return {
         login,
         logout,
+        setTokens,
+        clearTokens,
         getAccessToken,
         getRefreshToken,
         isAuthenticated,

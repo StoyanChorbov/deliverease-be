@@ -10,17 +10,29 @@ interface AddDeliveryInfoProps {
 const props = defineProps<AddDeliveryInfoProps>();
 
 const packageName = ref("");
-const startLocation = ref("");
-const endLocation = ref("");
+const startLocationName = ref("");
+const endLocationName = ref("");
 const description = ref("");
 const category = ref(DeliveryCategory.Other);
 const isFragile = ref(false);
 
 const handleNext = () => {
     const addDeliveryInfoDto: AddDeliveryInfoDto = {
-        packageName: packageName.value,
-        startLocation: startLocation.value,
-        endLocation: endLocation.value,
+        name: packageName.value,
+        startLocation: {
+            address: startLocationName.value,
+            city: "City",
+            latitude: 24,
+            longitude: 24
+        },
+        startLocationRegion: "Start",
+        endLocation: {
+            address: endLocationName.value,
+            city: "Town",
+            latitude: 24,
+            longitude: 24
+        },
+        endLocationRegion: "End",
         description: description.value,
         category: category.value,
         isFragile: isFragile.value,
@@ -37,8 +49,8 @@ const handleNext = () => {
         <h1 class="text-3xl font-bold pb-2">Add delivery</h1>
         <v-form>
             <v-text-field v-model="packageName" label="Package name"/>
-            <v-text-field v-model="startLocation" label="Start location"/>
-            <v-text-field v-model="endLocation" label="End location"/>
+            <v-text-field v-model="startLocationName" label="Start location"/>
+            <v-text-field v-model="endLocationName" label="End location"/>
             <v-textarea v-model="description" label="Description"/>
             <v-select label="Category" v-model="category" :items="Object.values(DeliveryCategory)"/>
             <v-checkbox v-model="isFragile" label="Is this package fragile?"/>

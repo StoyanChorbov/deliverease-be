@@ -8,7 +8,9 @@ interface MapMarker {
     label: string;
 }
 
-mapboxgl.accessToken = "pk.eyJ1Ijoic2xhenkiLCJhIjoiY204NjA0NWF1MjY3cTJrc2F2b2NwdWozeCJ9.hnt0ctjDcF1VDr3TGyfldA";
+mapboxgl.accessToken = process.env.MAPBOX_PUBLIC_KEY;
+
+console.log(mapboxgl.accessToken);
 
 const mapContainer = ref<HTMLDivElement | null>(null);
 

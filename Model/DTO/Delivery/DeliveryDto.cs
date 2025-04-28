@@ -1,13 +1,14 @@
 namespace Model.DTO.Delivery;
 
 public record DeliveryDto(
+    string Id,
     string Name,
     string Description,
     string Category,
     LocationDto StartingLocation,
-    string StartingLocationRegion,
+    int StartingLocationRegion,
     LocationDto EndingLocation,
-    string EndingLocationRegion,
+    int EndingLocationRegion,
     string Sender,
     string? Deliverer,
     List<string> Recipients,

@@ -16,14 +16,6 @@ public class UserService(
     UserManager<User> userManager,
     IConfiguration configuration)
 {
-    public async Task<UserDto> Get(Guid id)
-    {
-        var user = await userRepository.Get(id);
-
-        if (user == null)
-            throw new Exception("User not found");
-        return ToDto(user);
-    }
 
     public async Task<UserDto> Get(string username)
     {
@@ -32,7 +24,7 @@ public class UserService(
 
     public async Task<User> GetUserByUsername(string username)
     {
-        var user = await userRepository.Get(username);
+        var user = await userManager.FindByNameAsync(username);
 
         if (user == null)
             throw new Exception("User not found");
@@ -42,12 +34,12 @@ public class UserService(
 
     public async Task<List<User>> GetAllByUsernames(List<string> usernames)
     {
-        return await userRepository.GetAllByUsernames(usernames);
+        return await userRepository.GetAllByUsernamesAsync(usernames);
     }
 
     public async Task<User?> GetByJwtToken(string token)
     {
-        return await userRepository.GetByJwtToken(token);
+        return await userRepository.GetByJwtTokenAsync(token);
     }
 
     public async Task<Tuple<string?, string?>?> Login(UserLoginDto userLoginDto)
@@ -58,15 +50,15 @@ public class UserService(
 
         if (user == null || !await userManager.CheckPasswordAsync(user, password)) return null;
 
-        var generatedAuthToken = await GenerateAuthToken(user);
+        var generatedAuthToken = await GetAuthToken(user);
         var authToken = new JwtSecurityTokenHandler().WriteToken(generatedAuthToken);
         var refreshToken = GenerateRefreshToken();
 
         var token = new JwtToken
         {
             Token = authToken,
-            RefreshToken = refreshToken.Token,
-            RefreshTokenExpiry = refreshToken.Expires,
+            RefreshToken = refreshToken.Item1,
+            RefreshTokenExpiry = refreshToken.Item2,
             UserId = user.Id
         };
 
@@ -77,7 +69,7 @@ public class UserService(
 
         return new Tuple<string?, string?>(
             authToken,
-            refreshToken.Token
+            refreshToken.Item1
         );
     }
 
@@ -88,20 +80,20 @@ public class UserService(
         if (existingToken == null || existingToken.RefreshTokenExpiry < DateTime.UtcNow)
             throw new UnauthorizedAccessException("Invalid or expired refresh token!");
 
-        var user = await userRepository.GetByRefreshToken(existingToken);
+        var user = await userRepository.GetByRefreshTokenAsync(existingToken);
 
         if (user == null)
             throw new ArgumentException("User not found");
 
-        var generatedAuthToken = await GenerateAuthToken(user);
+        var generatedAuthToken = await GetAuthToken(user);
         var authToken = new JwtSecurityTokenHandler().WriteToken(generatedAuthToken);
         var generatedRefreshToken = GenerateRefreshToken();
 
         var token = new JwtToken
         {
             Token = authToken,
-            RefreshToken = generatedRefreshToken.Token,
-            RefreshTokenExpiry = generatedRefreshToken.Expires
+            RefreshToken = generatedRefreshToken.Item1,
+            RefreshTokenExpiry = generatedRefreshToken.Item2
         };
 
         await tokenRepository.AddAsync(token);
@@ -111,18 +103,18 @@ public class UserService(
 
         return new Tuple<string?, string?>(
             authToken,
-            refreshToken
+            generatedRefreshToken.Item1
         );
     }
 
-    public async Task<ICollection<UserDto>> GetAll()
+    public async Task<List<UserDto>> GetAll()
     {
-        return (await userRepository.GetAll()).Select(ToDto).ToList();
+        return (await userRepository.GetAllAsync()).Select(ToDto).ToList();
     }
 
     public async Task Register(UserRegisterDto user)
     {
-        var existingUser = await userRepository.Get(user.Username);
+        var existingUser = await userManager.FindByNameAsync(user.Username);
 
         if (existingUser != null)
             throw new Exception("User already exists");
@@ -149,7 +141,7 @@ public class UserService(
 
     public async Task<UserDto?> Update(UserDto user)
     {
-        var existingUser = await userRepository.Get(user.Username);
+        var existingUser = await userManager.FindByNameAsync(user.Username);
 
         if (existingUser == null)
             throw new Exception("User not found");
@@ -157,16 +149,6 @@ public class UserService(
         var updateResult = await userManager.UpdateAsync(existingUser);
 
         return updateResult.Succeeded ? ToDto(existingUser) : null;
-    }
-
-    public async Task Delete(Guid id)
-    {
-        var user = await userManager.FindByIdAsync(id.ToString());
-
-        if (user == null)
-            throw new Exception("User not found");
-
-        await userManager.DeleteAsync(user);
     }
 
     public async Task Delete(string username)
@@ -178,6 +160,11 @@ public class UserService(
             throw new Exception("User not found");
 
         await userManager.DeleteAsync(user);
+    }
+
+    public async Task AddDeliveryRecipients(Delivery delivery, List<string> recipientUsernames)
+    {
+        await userRepository.AddDeliveryRecipientsAsync(delivery, recipientUsernames);
     }
 
     public static string? CheckTokenValidity(string token)
@@ -194,10 +181,7 @@ public class UserService(
             return "Token does not contain expiry claim";
 
         var expiryDate = DateTimeOffset.FromUnixTimeSeconds(long.Parse(expiryClaim.Value)).UtcDateTime;
-        if (expiryDate < DateTime.UtcNow)
-            return "Expired token";
-
-        return null;
+        return expiryDate < DateTime.UtcNow ? "Expired token" : null;
     }
 
     private static UserDto ToDto(User user)
@@ -206,20 +190,20 @@ public class UserService(
             user.IsDeliveryPerson);
     }
 
-    private JwtSecurityToken GetToken(List<Claim> claims)
+    private JwtSecurityToken GenerateAuthToken(List<Claim> claims)
     {
-        var secretKey = configuration["JWT:SecretKey"] ?? throw new Exception("Secret key not found");
+        var secretKey = configuration["JWT:Secret"] ?? throw new Exception("Secret key not found");
         var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
         var token = new JwtSecurityToken(
-            expires: DateTime.Now.AddHours(1),
+            expires: DateTime.UtcNow.AddHours(6),
             claims: claims,
             signingCredentials: credentials
         );
         return token;
     }
 
-    private async Task<JwtSecurityToken> GenerateAuthToken(User user)
+    private async Task<JwtSecurityToken> GetAuthToken(User user)
     {
         var claims = new List<Claim>
         {
@@ -230,15 +214,12 @@ public class UserService(
         var roles = await userManager.GetRolesAsync(user);
         claims.AddRange(roles.Select(role => new Claim(ClaimTypes.Role, role)));
 
-        return GetToken(claims);
+        return GenerateAuthToken(claims);
     }
 
-    private static RefreshToken GenerateRefreshToken()
-    {
-        return new RefreshToken
-        {
-            Token = Guid.NewGuid().ToString(),
-            Expires = DateTime.UtcNow.AddDays(7)
-        };
-    }
+    private static Tuple<string, DateTime> GenerateRefreshToken() =>
+        new(
+            Guid.NewGuid().ToString(),
+            DateTime.UtcNow.AddDays(7)
+        );
 }

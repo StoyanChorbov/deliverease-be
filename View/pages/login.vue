@@ -29,13 +29,15 @@ const passwordRules: ValidationRule[] = [
     }
 ]
 
+const error = ref("");
+
 const submit = async () => {
     if (form.value?.validate()) {
         // Perform login action
         await login(username.value, password.value);
-        console.log('Login successful');
+        error.value = "";
     } else {
-        console.log('Login failed');
+        error.value = "There was an error when logging in";
     }
 }
 
@@ -66,6 +68,7 @@ const submit = async () => {
                         @click:append-inner="isPasswordVisible = !isPasswordVisible"
                         required
                     ></v-text-field>
+                    <p v-if="error.length > 0">{{ error }}</p>
                     <p>Don't have an account? <a class="text-blue" href="/register">Register here</a></p>
                     <v-btn @click="submit" variant="tonal" rounded="xl" color="primary">Login</v-btn>
                 </v-form>

@@ -16,7 +16,7 @@ public class DelivereaseDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
     }
 
     public DbSet<JwtToken> JwtTokens { get; set; }
-    public DbSet<RefreshToken> RefreshTokens { get; set; }
+    public DbSet<Location> Locations { get; set; }
     public DbSet<Delivery> Deliveries { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

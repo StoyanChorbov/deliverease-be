@@ -28,7 +28,8 @@ public class Program
         // Add services to the container.
         builder.Services.AddDbContext<DelivereaseDbContext>(options => { options.UseNpgsql(connectionString); });
 
-        builder.Services.AddIdentity<User, IdentityRole<Guid>>()
+        builder.Services.AddIdentityCore<User>()
+            .AddRoles<IdentityRole<Guid>>()
             .AddEntityFrameworkStores<DelivereaseDbContext>()
             .AddDefaultTokenProviders();
 

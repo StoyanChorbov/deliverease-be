@@ -67,7 +67,6 @@ public class UsersController(UserService userService) : ControllerBase
     }
 
     [HttpPost("refresh")]
-    [Authorize]
     public async Task<IActionResult> RefreshToken([FromBody] string refreshToken)
     {
         var result = await userService.Refresh(refreshToken);

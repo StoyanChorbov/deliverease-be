@@ -20,11 +20,11 @@ public class Delivery : BaseEntity
 
     public Guid StartingLocationId { get; set; }
     public Location StartingLocation { get; set; }
-    public string StartingLocationRegion { get; set; }
+    public int StartingLocationRegion { get; set; }
 
     public Guid EndingLocationId { get; set; }
     public Location EndingLocation { get; set; }
-    public string EndingLocationRegion { get; set; }
+    public int EndingLocationRegion { get; set; }
 
     public bool IsFragile { get; set; }
 

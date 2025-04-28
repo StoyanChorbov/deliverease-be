@@ -16,7 +16,14 @@ public class DeliveryRepository(DelivereaseDbContext context)
 
     public async Task<Delivery> GetAsync(Guid id)
     {
-        var delivery = await _deliveries.FindAsync(id);
+        var delivery = await _deliveries
+            .AsNoTrackingWithIdentityResolution()
+            .Include(d => d.StartingLocation)
+            .Include(d => d.EndingLocation)
+            .Include(d => d.Sender)
+            .Include(d => d.Deliverer)
+            .Include(d => d.Recipients)
+            .FirstOrDefaultAsync(d => d.Id == id);
 
         if (delivery == null)
             throw new ArgumentException("Delivery not found");
@@ -26,14 +33,29 @@ public class DeliveryRepository(DelivereaseDbContext context)
 
     public async Task<List<Delivery>> GetAllAsync()
     {
-        return await _deliveries.ToListAsync();
+        return await _deliveries
+            .AsNoTrackingWithIdentityResolution()
+            .Include(d => d.StartingLocation)
+            .Include(d => d.EndingLocation)
+            .Include(d => d.Sender)
+            .Include(d => d.Deliverer)
+            .Include(d => d.Recipients)
+            .ToListAsync();
     }
 
-    public async Task<List<Delivery>> GetAllByStartingAndEndingLocation(string startingLocationCity,
-        string endingLocationCity)
+    public async Task<List<Delivery>> GetAllByStartingAndEndingLocation(int startingLocationRegion,
+        int endingLocationRegion)
     {
         var deliveries = await _deliveries
-            .Where(d => d.StartingLocationRegion == startingLocationCity && d.EndingLocationRegion == endingLocationCity)
+            .Include(d => d.StartingLocation)
+            .Include(d => d.EndingLocation)
+            .Include(d => d.Sender)
+            .Include(d => d.Deliverer)
+            .Include(d => d.Recipients)
+            .Where(d =>
+                Math.Abs(d.StartingLocationRegion - startingLocationRegion) < 500 &&
+                Math.Abs(d.EndingLocationRegion - endingLocationRegion) < 500)
+            .Take(15)
             .ToListAsync();
 
         return deliveries;
