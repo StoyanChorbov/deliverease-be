@@ -25,7 +25,25 @@ public class UsersController(UserService userService) : ControllerBase
     }
 
     [HttpGet]
-    // [Authorize(Roles = UserRoles.Admin)]
+    [Authorize]
+    public async Task<IActionResult> GetProfile()
+    {
+        try
+        {
+            var username = User.Identity?.Name;
+            if (username == null)
+                return Unauthorized();
+
+            return Ok(await userService.Get(username));
+        }
+        catch (Exception e)
+        {
+            return BadRequest(e.Message);
+        }
+    }
+
+    [HttpGet]
+    [Authorize(Roles = UserRoles.Admin)]
     public async Task<IActionResult> GetAll()
     {
         try

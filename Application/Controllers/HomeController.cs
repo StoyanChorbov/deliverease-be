@@ -7,5 +7,5 @@ namespace Application.Controllers;
 public class HomeController : ControllerBase
 {
     [HttpGet]
-    public IActionResult Get() => Ok("Hi");
+    public IActionResult Get() => Ok();
 }

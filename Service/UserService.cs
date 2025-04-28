@@ -24,7 +24,8 @@ public class UserService(
 
     public async Task<User> GetUserByUsername(string username)
     {
-        var user = await userManager.FindByNameAsync(username);
+        var normalizedUsername = userManager.NormalizeName(username);
+        var user = await userManager.FindByNameAsync(normalizedUsername);
 
         if (user == null)
             throw new Exception("User not found");
