@@ -1,3 +1,3 @@
-namespace Model.DTO.Delivery;
+namespace Model.DTO.Location;
 
-public record LocationDto(string Address, string City, double Latitude, double Longitude);
+public record LocationDto(string Place, string Region, double Latitude, double Longitude);

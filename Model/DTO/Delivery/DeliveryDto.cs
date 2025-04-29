@@ -1,3 +1,5 @@
+using Model.DTO.Location;
+
 namespace Model.DTO.Delivery;
 
 public record DeliveryDto(
@@ -6,9 +8,9 @@ public record DeliveryDto(
     string Description,
     string Category,
     LocationDto StartingLocation,
-    int StartingLocationRegion,
+    string StartingLocationRegion,
     LocationDto EndingLocation,
-    int EndingLocationRegion,
+    string EndingLocationRegion,
     string Sender,
     string? Deliverer,
     List<string> Recipients,

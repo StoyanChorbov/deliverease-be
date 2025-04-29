@@ -17,12 +17,12 @@ public class UserService(
     IConfiguration configuration)
 {
 
-    public async Task<UserDto> Get(string username)
+    public async Task<UserDto> GetAsync(string username)
     {
-        return ToDto(await GetUserByUsername(username));
+        return ToDto(await GetUserByUsernameAsync(username));
     }
 
-    public async Task<User> GetUserByUsername(string username)
+    public async Task<User> GetUserByUsernameAsync(string username)
     {
         var normalizedUsername = userManager.NormalizeName(username);
         var user = await userManager.FindByNameAsync(normalizedUsername);
@@ -33,21 +33,20 @@ public class UserService(
         return user;
     }
 
-    public async Task<List<User>> GetAllByUsernames(List<string> usernames)
+    public async Task<List<User>> GetAllByUsernamesAsync(List<string> usernames)
     {
         return await userRepository.GetAllByUsernamesAsync(usernames);
     }
 
-    public async Task<User?> GetByJwtToken(string token)
+    public async Task<User?> GetByJwtTokenAsync(string token)
     {
         return await userRepository.GetByJwtTokenAsync(token);
     }
 
-    public async Task<Tuple<string?, string?>?> Login(UserLoginDto userLoginDto)
+    public async Task<Tuple<string?, string?>?> LoginAsync(UserLoginDto userLoginDto)
     {
-        var username = userManager.NormalizeName(userLoginDto.Username);
         var password = userLoginDto.Password;
-        var user = await userManager.FindByNameAsync(username);
+        var user = await userManager.FindByNameAsync(userLoginDto.Username);
 
         if (user == null || !await userManager.CheckPasswordAsync(user, password)) return null;
 
@@ -74,7 +73,7 @@ public class UserService(
         );
     }
 
-    public async Task<Tuple<string?, string?>?> Refresh(string refreshToken)
+    public async Task<Tuple<string?, string?>?> RefreshAsync(string refreshToken)
     {
         var existingToken = await tokenRepository.GetByRefreshTokenAsync(refreshToken);
 
@@ -108,12 +107,12 @@ public class UserService(
         );
     }
 
-    public async Task<List<UserDto>> GetAll()
+    public async Task<List<UserDto>> GetAllAsync()
     {
         return (await userRepository.GetAllAsync()).Select(ToDto).ToList();
     }
 
-    public async Task Register(UserRegisterDto user)
+    public async Task RegisterAsync(UserRegisterDto user)
     {
         var existingUser = await userManager.FindByNameAsync(user.Username);
 
@@ -140,7 +139,7 @@ public class UserService(
         await userManager.AddToRoleAsync(newUser, UserRoles.User);
     }
 
-    public async Task<UserDto?> Update(UserDto user)
+    public async Task<UserDto?> UpdateAsync(UserDto user)
     {
         var existingUser = await userManager.FindByNameAsync(user.Username);
 
@@ -152,7 +151,7 @@ public class UserService(
         return updateResult.Succeeded ? ToDto(existingUser) : null;
     }
 
-    public async Task Delete(string username)
+    public async Task DeleteAsync(string username)
     {
         var normalizedUserName = userManager.NormalizeName(username);
         var user = await userManager.FindByNameAsync(normalizedUserName);
@@ -163,7 +162,7 @@ public class UserService(
         await userManager.DeleteAsync(user);
     }
 
-    public async Task AddDeliveryRecipients(Delivery delivery, List<string> recipientUsernames)
+    public async Task AddDeliveryRecipientsAsync(Delivery delivery, List<string> recipientUsernames)
     {
         await userRepository.AddDeliveryRecipientsAsync(delivery, recipientUsernames);
     }

@@ -1,3 +1,5 @@
+using Model.DTO.Location;
+
 namespace Model.DTO.Delivery;
 
 public record FindableDeliveryDto(

@@ -43,8 +43,8 @@ public class DeliveryRepository(DelivereaseDbContext context)
             .ToListAsync();
     }
 
-    public async Task<List<Delivery>> GetAllByStartingAndEndingLocation(int startingLocationRegion,
-        int endingLocationRegion)
+    public async Task<List<Delivery>> GetAllByStartingAndEndingLocation(string startingLocationRegion,
+        string endingLocationRegion)
     {
         var deliveries = await _deliveries
             .Include(d => d.StartingLocation)
@@ -53,8 +53,8 @@ public class DeliveryRepository(DelivereaseDbContext context)
             .Include(d => d.Deliverer)
             .Include(d => d.Recipients)
             .Where(d =>
-                Math.Abs(d.StartingLocationRegion - startingLocationRegion) < 500 &&
-                Math.Abs(d.EndingLocationRegion - endingLocationRegion) < 500)
+                d.StartingLocationRegion == startingLocationRegion &&
+                d.EndingLocationRegion == endingLocationRegion)
             .Take(15)
             .ToListAsync();
 

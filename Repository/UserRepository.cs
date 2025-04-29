@@ -22,8 +22,10 @@ public class UserRepository(DelivereaseDbContext context)
                     .Include(u => u.DelivererDeliveries)
                     .ToListAsync();
             }
+
             return await _users.AsNoTrackingWithIdentityResolution().ToListAsync();
         }
+
         if (useNavigationalProperties)
         {
             return await _users
@@ -33,10 +35,12 @@ public class UserRepository(DelivereaseDbContext context)
                 .Include(u => u.DelivererDeliveries)
                 .ToListAsync();
         }
+
         return await _users.ToListAsync();
     }
 
-    public async Task<List<User>> GetAllByUsernamesAsync(List<string> usernames, bool useNavigationalProperties = true, bool isReadOnly = true)
+    public async Task<List<User>> GetAllByUsernamesAsync(List<string> usernames, bool useNavigationalProperties = true,
+        bool isReadOnly = true)
     {
         if (isReadOnly)
         {
@@ -48,8 +52,11 @@ public class UserRepository(DelivereaseDbContext context)
                     .Where(u => usernames.Contains(u.UserName!))
                     .ToListAsync();
             }
-            return await _users.AsNoTrackingWithIdentityResolution().Where(u => usernames.Contains(u.UserName!)).ToListAsync();
+
+            return await _users.AsNoTrackingWithIdentityResolution().Where(u => usernames.Contains(u.UserName!))
+                .ToListAsync();
         }
+
         if (useNavigationalProperties)
         {
             return await _users
@@ -57,10 +64,12 @@ public class UserRepository(DelivereaseDbContext context)
                 .Where(u => usernames.Contains(u.UserName!))
                 .ToListAsync();
         }
+
         return await _users.Where(u => usernames.Contains(u.UserName!)).ToListAsync();
     }
 
-    public async Task<User?> GetByJwtTokenAsync(string token, bool useNavigationalProperties = true, bool isReadOnly = true)
+    public async Task<User?> GetByJwtTokenAsync(string token, bool useNavigationalProperties = true,
+        bool isReadOnly = true)
     {
         if (isReadOnly)
         {
@@ -71,18 +80,23 @@ public class UserRepository(DelivereaseDbContext context)
                     .Include(u => u.JwtTokens)
                     .FirstOrDefaultAsync(u => u.JwtTokens.Any(t => t.Token == token));
             }
-            return await _users.AsNoTrackingWithIdentityResolution().FirstOrDefaultAsync(u => u.JwtTokens.Any(t => t.Token == token));
+
+            return await _users.AsNoTrackingWithIdentityResolution()
+                .FirstOrDefaultAsync(u => u.JwtTokens.Any(t => t.Token == token));
         }
+
         if (useNavigationalProperties)
         {
             return await _users
                 .Include(u => u.JwtTokens)
                 .FirstOrDefaultAsync(u => u.JwtTokens.Any(t => t.Token == token));
         }
+
         return await _users.FirstOrDefaultAsync(u => u.JwtTokens.Any(t => t.Token == token));
     }
 
-    public async Task<User?> GetByRefreshTokenAsync(JwtToken token, bool useNavigationalProperties = true, bool isReadOnly = true)
+    public async Task<User?> GetByRefreshTokenAsync(JwtToken token, bool useNavigationalProperties = true,
+        bool isReadOnly = true)
     {
         if (isReadOnly)
         {
@@ -93,14 +107,18 @@ public class UserRepository(DelivereaseDbContext context)
                     .Include(u => u.JwtTokens)
                     .FirstOrDefaultAsync(u => u.JwtTokens.Contains(token));
             }
-            return await _users.AsNoTrackingWithIdentityResolution().FirstOrDefaultAsync(u => u.JwtTokens.Contains(token));
+
+            return await _users.AsNoTrackingWithIdentityResolution()
+                .FirstOrDefaultAsync(u => u.JwtTokens.Contains(token));
         }
+
         if (useNavigationalProperties)
         {
             return await _users
                 .Include(u => u.JwtTokens)
                 .FirstOrDefaultAsync(u => u.JwtTokens.Contains(token));
         }
+
         return await _users.FirstOrDefaultAsync(u => u.JwtTokens.Contains(token));
     }
 

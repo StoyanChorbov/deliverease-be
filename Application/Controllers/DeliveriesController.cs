@@ -11,8 +11,8 @@ namespace Application.Controllers;
 public class DeliveriesController(DeliveryService deliveryService) : ControllerBase
 {
     // POST: api/Deliveries
-    [Authorize]
     [HttpPost]
+    [Authorize]
     public async Task<IActionResult> AddDelivery([FromBody] DeliveryAddDto deliveryAddDto)
     {
         if (!User.Identity?.IsAuthenticated ?? false)
@@ -25,12 +25,13 @@ public class DeliveriesController(DeliveryService deliveryService) : ControllerB
     }
     
     // GET: api/Deliveries
-    [HttpGet]
-    public async Task<ActionResult<List<FindableDeliveryDto>>> GetDeliveries()
-    {
-        var deliveries = await deliveryService.GetAllDeliveriesAsync();
-        return Ok(deliveries);
-    }
+    // [HttpGet]
+    // [Authorize]
+    // public async Task<ActionResult<List<FindableDeliveryDto>>> GetDeliveries()
+    // {
+    //     var deliveries = await deliveryService.GetAllDeliveriesAsync();
+    //     return Ok(deliveries);
+    // }
 
     // GET: api/Deliveries/5
     [HttpGet("{id:guid}")]
@@ -40,9 +41,9 @@ public class DeliveriesController(DeliveryService deliveryService) : ControllerB
         return await deliveryService.GetDeliveryAsync(id);
     }
     
-    [HttpGet("/deliveries/locations/{startingLocationRegion:int}/{endingLocationRegion:int}")]
+    [HttpGet("/deliveries/locations/{startingLocationRegion}/{endingLocationRegion}")]
     public async Task<ActionResult<List<DeliveryDto>>> GetDeliveriesByLocations(
-        int startingLocationRegion, int endingLocationRegion)
+        string startingLocationRegion, string endingLocationRegion)
     {
         var deliveries = await deliveryService.GetAllByStartingAndEndingLocation(startingLocationRegion, endingLocationRegion);
         return Ok(deliveries);
@@ -50,6 +51,7 @@ public class DeliveriesController(DeliveryService deliveryService) : ControllerB
 
     // PUT: api/Deliveries/5
     [HttpPatch("{id:guid}")]
+    [Authorize]
     public async Task<IActionResult> UpdateDelivery([FromRoute] Guid id, [FromBody] DeliveryDto deliveryDto)
     {
         await deliveryService.UpdateDeliveryAsync(id, deliveryDto);
@@ -58,6 +60,7 @@ public class DeliveriesController(DeliveryService deliveryService) : ControllerB
 
     // DELETE: api/Deliveries/5
     [HttpDelete("{id:guid}")]
+    [Authorize]
     public async Task<IActionResult> DeleteDelivery(Guid id)
     {
         await deliveryService.DeleteDeliveryAsync(id);

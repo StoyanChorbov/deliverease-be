@@ -1,6 +1,6 @@
 namespace Model;
 
-public class Delivery : BaseEntity
+public class Delivery() : BaseEntity
 {
     public string Name { get; set; }
     public string Description { get; set; }
@@ -12,13 +12,10 @@ public class Delivery : BaseEntity
     public User? Deliverer { get; set; }
     public Guid StartingLocationId { get; set; }
     public Location StartingLocation { get; set; }
-    public int StartingLocationRegion { get; set; }
+    public string StartingLocationRegion { get; set; }
     public Guid EndingLocationId { get; set; }
     public Location EndingLocation { get; set; }
-    public int EndingLocationRegion { get; set; }
+    public string EndingLocationRegion { get; set; }
     public bool IsFragile { get; set; }
     public DateTime? DeliveryDate { get; set; }
-    public Delivery()
-    {
-    }
 }

@@ -1,6 +1,7 @@
 using Microsoft.IdentityModel.Tokens;
 using Model;
 using Model.DTO.Delivery;
+using Model.DTO.Location;
 using Repository;
 
 namespace Service;
@@ -14,8 +15,8 @@ public class DeliveryService(
     {
         var startLocation = await locationService.AddLocationAsync(deliveryAddDto.StartLocation);
         var endLocation = await locationService.AddLocationAsync(deliveryAddDto.EndLocation);
-        var recipients = await userService.GetAllByUsernames(deliveryAddDto.Recipients);
-        var sender = await userService.GetUserByUsername(username) ?? throw new Exception("User not found");
+        var recipients = await userService.GetAllByUsernamesAsync(deliveryAddDto.Recipients);
+        var sender = await userService.GetUserByUsernameAsync(username) ?? throw new Exception("User not found");
 
         var delivery = new Delivery
         {
@@ -31,7 +32,10 @@ public class DeliveryService(
             IsFragile = deliveryAddDto.IsFragile
         };
 
-        await userService.AddDeliveryRecipients(delivery, recipients.Select(r => r.UserName!).ToList());
+        await userService.AddDeliveryRecipientsAsync(
+            delivery,
+            recipients.Select(r => r.UserName!).ToList()
+        );
         await deliveryRepository.AddAsync(delivery);
     }
 
@@ -46,10 +50,11 @@ public class DeliveryService(
         return deliveries.Select(ToFindableDto).ToList();
     }
 
-    public async Task<List<DeliveryDto>> GetAllByStartingAndEndingLocation(int startingLocationRegion,
-        int endingLocationRegion)
+    public async Task<List<DeliveryDto>> GetAllByStartingAndEndingLocation(string startingLocationRegion,
+        string endingLocationRegion)
     {
-        return (await deliveryRepository.GetAllByStartingAndEndingLocation(startingLocationRegion, endingLocationRegion))
+        return (await deliveryRepository.GetAllByStartingAndEndingLocation(startingLocationRegion,
+                endingLocationRegion))
             .Select(ToDto)
             .ToList();
     }
@@ -64,8 +69,8 @@ public class DeliveryService(
         delivery.StartingLocationRegion = deliveryDto.StartingLocationRegion;
         delivery.EndingLocation = await locationService.AddLocationAsync(deliveryDto.EndingLocation);
         delivery.EndingLocationRegion = deliveryDto.EndingLocationRegion;
-        delivery.Sender = await userService.GetUserByUsername(deliveryDto.Sender);
-        delivery.Recipients = await userService.GetAllByUsernames(deliveryDto.Recipients);
+        delivery.Sender = await userService.GetUserByUsernameAsync(deliveryDto.Sender);
+        delivery.Recipients = await userService.GetAllByUsernamesAsync(deliveryDto.Recipients);
         delivery.IsFragile = deliveryDto.IsFragile;
         await deliveryRepository.UpdateAsync(delivery);
     }
@@ -83,40 +88,42 @@ public class DeliveryService(
             delivery.Description,
             delivery.Category.ToString(),
             new LocationDto(
-                delivery.StartingLocation.Address,
-                delivery.StartingLocation.City,
+                delivery.StartingLocation.Place,
+                delivery.StartingLocation.Region,
                 delivery.StartingLocation.Latitude,
                 delivery.StartingLocation.Longitude
             ),
             delivery.StartingLocationRegion,
             new LocationDto(
-                delivery.EndingLocation.Address,
-                delivery.EndingLocation.City,
+                delivery.EndingLocation.Place,
+                delivery.EndingLocationRegion,
                 delivery.EndingLocation.Latitude,
                 delivery.EndingLocation.Longitude
             ),
             delivery.EndingLocationRegion,
             delivery.Sender.UserName ?? throw new Exception("User not found"),
             delivery.Deliverer?.UserName,
-            delivery.Recipients.IsNullOrEmpty() ? [] : delivery.Recipients.Select(r => r.UserName ?? "").ToList(),
+            delivery.Recipients.IsNullOrEmpty()
+                ? [] 
+                : delivery.Recipients.Select(r => r.UserName ?? "").ToList(),
             delivery.IsFragile
         );
     }
-    
+
     private static FindableDeliveryDto ToFindableDto(Delivery delivery) =>
         new FindableDeliveryDto(
             delivery.Id.ToString(),
             delivery.Name,
             delivery.Category.ToString(),
             new LocationDto(
-                delivery.StartingLocation.Address,
-                delivery.StartingLocation.City,
+                delivery.StartingLocation.Place,
+                delivery.StartingLocation.Region,
                 delivery.StartingLocation.Latitude,
                 delivery.StartingLocation.Longitude
             ),
             new LocationDto(
-                delivery.EndingLocation.Address,
-                delivery.EndingLocation.City,
+                delivery.EndingLocation.Place,
+                delivery.EndingLocation.Region,
                 delivery.EndingLocation.Latitude,
                 delivery.EndingLocation.Longitude
             ),

@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using Model.DTO.Location;
 
 namespace Model.DTO.Delivery;
 
@@ -7,9 +8,9 @@ public record DeliveryAddDto(
     [Required] string Description,
     [Required] string Category,
     [Required] LocationDto StartLocation,
-    [Required] int StartLocationRegion,
+    [Required] string StartLocationRegion,
     [Required] LocationDto EndLocation,
-    [Required] int EndLocationRegion,
+    [Required] string EndLocationRegion,
     [Required] List<string> Recipients,
     [Required] bool IsFragile
 );

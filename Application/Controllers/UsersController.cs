@@ -16,7 +16,7 @@ public class UsersController(UserService userService) : ControllerBase
     {
         try
         {
-            return Ok(await userService.Get(username));
+            return Ok(await userService.GetAsync(username));
         }
         catch (Exception e)
         {
@@ -24,7 +24,7 @@ public class UsersController(UserService userService) : ControllerBase
         }
     }
 
-    [HttpGet]
+    [HttpGet("profile")]
     [Authorize]
     public async Task<IActionResult> GetProfile()
     {
@@ -34,7 +34,7 @@ public class UsersController(UserService userService) : ControllerBase
             if (username == null)
                 return Unauthorized();
 
-            return Ok(await userService.Get(username));
+            return Ok(await userService.GetAsync(username));
         }
         catch (Exception e)
         {
@@ -48,7 +48,7 @@ public class UsersController(UserService userService) : ControllerBase
     {
         try
         {
-            return Ok(await userService.GetAll());
+            return Ok(await userService.GetAllAsync());
         }
         catch (Exception e)
         {
@@ -59,7 +59,7 @@ public class UsersController(UserService userService) : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] UserLoginDto userLoginDto)
     {
-        var result = await userService.Login(userLoginDto);
+        var result = await userService.LoginAsync(userLoginDto);
         if (result == null)
             return Unauthorized();
 
@@ -75,7 +75,7 @@ public class UsersController(UserService userService) : ControllerBase
     {
         try
         {
-            await userService.Register(user);
+            await userService.RegisterAsync(user);
             return Ok();
         }
         catch (Exception e)
@@ -87,7 +87,7 @@ public class UsersController(UserService userService) : ControllerBase
     [HttpPost("refresh")]
     public async Task<IActionResult> RefreshToken([FromBody] string refreshToken)
     {
-        var result = await userService.Refresh(refreshToken);
+        var result = await userService.RefreshAsync(refreshToken);
         if (result == null)
             return Unauthorized();
 
@@ -104,7 +104,7 @@ public class UsersController(UserService userService) : ControllerBase
     {
         try
         {
-            var updatedUser = await userService.Update(userDto);
+            var updatedUser = await userService.UpdateAsync(userDto);
 
             if (updatedUser == null)
                 return NotFound();
@@ -123,7 +123,7 @@ public class UsersController(UserService userService) : ControllerBase
     {
         try
         {
-            await userService.Delete(username);
+            await userService.DeleteAsync(username);
             return Ok();
         }
         catch (Exception e)

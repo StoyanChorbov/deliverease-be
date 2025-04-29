@@ -92,6 +92,13 @@ public static class ServiceConfig
                 }
 
                 return Task.CompletedTask;
-            }
+            },
+            OnAuthenticationFailed = context =>
+            {
+                Logger.LogError("Authentication failed: {Error} -> {Token}",
+                    context.Exception.Message,
+                    context.Request.Headers.Authorization);
+                return Task.CompletedTask;
+            },
         };
 }

@@ -1,5 +1,6 @@
 using Model;
 using Model.DTO.Delivery;
+using Model.DTO.Location;
 using Repository;
 
 namespace Service;
@@ -10,8 +11,8 @@ public class LocationService(LocationRepository locationRepository)
     {
         var location = new Location
         {
-            Address = locationDto.Address,
-            City = locationDto.City,
+            Place = locationDto.Place,
+            Region = locationDto.Region,
             Latitude = locationDto.Latitude,
             Longitude = locationDto.Longitude
         };
