@@ -26,7 +26,6 @@ export const useAuth = () => {
             }
         });
 
-        // TODO: Improve error handling
         if (error.value) throw error.value;
 
         if (data.value == null) throw new Error('Unable to login');

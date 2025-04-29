@@ -10,6 +10,7 @@ namespace Application.Controllers;
 [Route("/users")]
 public class UsersController(UserService userService) : ControllerBase
 {
+    // Get user by username
     [HttpGet("{username}")]
     [Authorize]
     public async Task<IActionResult> Get(string username)
@@ -24,6 +25,7 @@ public class UsersController(UserService userService) : ControllerBase
         }
     }
 
+    // Get the data for the logged-in user's profile
     [HttpGet("profile")]
     [Authorize]
     public async Task<IActionResult> GetProfile()
@@ -42,6 +44,7 @@ public class UsersController(UserService userService) : ControllerBase
         }
     }
 
+    // Get all users
     [HttpGet]
     [Authorize(Roles = UserRoles.Admin)]
     public async Task<IActionResult> GetAll()
@@ -56,6 +59,8 @@ public class UsersController(UserService userService) : ControllerBase
         }
     }
 
+    
+    // Login with username and password
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] UserLoginDto userLoginDto)
     {
@@ -70,6 +75,7 @@ public class UsersController(UserService userService) : ControllerBase
         return Ok(new { accessToken = token, refreshToken });
     }
 
+    // Register a new user
     [HttpPost]
     public async Task<IActionResult> Register([FromBody] UserRegisterDto user)
     {
@@ -84,6 +90,7 @@ public class UsersController(UserService userService) : ControllerBase
         }
     }
 
+    // Refresh the access token using the refresh token
     [HttpPost("refresh")]
     public async Task<IActionResult> RefreshToken([FromBody] string refreshToken)
     {
@@ -98,6 +105,7 @@ public class UsersController(UserService userService) : ControllerBase
         return Ok(new { accessToken = token, refreshToken = newRefreshToken });
     }
 
+    // Update the user's profile
     [HttpPut]
     [Authorize]
     public async Task<IActionResult> Update([FromBody] UserDto userDto)
@@ -117,6 +125,8 @@ public class UsersController(UserService userService) : ControllerBase
         }
     }
 
+    // Delete a user by username
+    // Requires admin role
     [HttpDelete("{username}")]
     [Authorize(Roles = UserRoles.Admin)]
     public async Task<IActionResult> Delete(string username)

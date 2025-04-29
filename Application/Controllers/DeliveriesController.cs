@@ -10,7 +10,7 @@ namespace Application.Controllers;
 [Route("/deliveries")]
 public class DeliveriesController(DeliveryService deliveryService) : ControllerBase
 {
-    // POST: api/Deliveries
+    // Add a new delivery to the database
     [HttpPost]
     [Authorize]
     public async Task<IActionResult> AddDelivery([FromBody] DeliveryAddDto deliveryAddDto)
@@ -20,36 +20,32 @@ public class DeliveriesController(DeliveryService deliveryService) : ControllerB
             return Unauthorized();
         }
 
-        await deliveryService.AddDeliveryAsync(deliveryAddDto, User.Identity?.Name ?? throw new Exception("User not found"));
+        await deliveryService.AddDeliveryAsync(
+            deliveryAddDto,
+            User.Identity?.Name ?? throw new Exception("User not found")
+        );
         return Ok();
     }
-    
-    // GET: api/Deliveries
-    // [HttpGet]
-    // [Authorize]
-    // public async Task<ActionResult<List<FindableDeliveryDto>>> GetDeliveries()
-    // {
-    //     var deliveries = await deliveryService.GetAllDeliveriesAsync();
-    //     return Ok(deliveries);
-    // }
 
-    // GET: api/Deliveries/5
+    // Get delivery by id
     [HttpGet("{id:guid}")]
     [Authorize(Roles = UserRoles.Admin)]
     public async Task<ActionResult<DeliveryDto>> GetDelivery(Guid id)
     {
         return await deliveryService.GetDeliveryAsync(id);
     }
-    
+
+    // Get deliveries by starting and ending location
     [HttpGet("/deliveries/locations/{startingLocationRegion}/{endingLocationRegion}")]
     public async Task<ActionResult<List<DeliveryDto>>> GetDeliveriesByLocations(
         string startingLocationRegion, string endingLocationRegion)
     {
-        var deliveries = await deliveryService.GetAllByStartingAndEndingLocation(startingLocationRegion, endingLocationRegion);
+        var deliveries =
+            await deliveryService.GetAllByStartingAndEndingLocation(startingLocationRegion, endingLocationRegion);
         return Ok(deliveries);
     }
 
-    // PUT: api/Deliveries/5
+    // Update the delivery using id and dto
     [HttpPatch("{id:guid}")]
     [Authorize]
     public async Task<IActionResult> UpdateDelivery([FromRoute] Guid id, [FromBody] DeliveryDto deliveryDto)
@@ -58,7 +54,7 @@ public class DeliveriesController(DeliveryService deliveryService) : ControllerB
         return Ok();
     }
 
-    // DELETE: api/Deliveries/5
+    // Delete the delivery
     [HttpDelete("{id:guid}")]
     [Authorize]
     public async Task<IActionResult> DeleteDelivery(Guid id)
