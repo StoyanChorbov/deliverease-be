@@ -10,6 +10,8 @@ interface MapMarker {
 
 mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_PUBLIC_KEY;
 
+console.log("key: ", mapboxgl.accessToken)
+
 const mapContainer = ref<HTMLDivElement | null>(null);
 
 const markers: MapMarker[] = [
