@@ -38,17 +38,17 @@
       - backend
       - web_app
 
-#  view:
-#    container_name: web_view
-#    build:
-#      context: .
-#      dockerfile: View/Dockerfile
-#    ports:
-#      - "3000:3000"
-#    depends_on:
-#      - application
-#    networks:
-#      - web_app
+  view:
+    container_name: web_view
+    build:
+      context: .
+      dockerfile: View/Dockerfile
+    ports:
+      - "3000:3000"
+    depends_on:
+      - application
+    networks:
+      - web_app
 
 networks:
   backend:
