@@ -1,4 +1,4 @@
-﻿services:
+services:
   postgres_db:
     container_name: postgres_db
     image: postgres:17.2
@@ -8,8 +8,6 @@
       POSTGRES_DB: deliverease_db
     volumes:
       - db_data:/var/lib/postgresql/data
-    ports:
-      - "5434:5432"
     networks:
       - backend
     healthcheck:
@@ -20,9 +18,7 @@
   
   application:
     container_name: application
-    build:
-      context: .
-      dockerfile: Application/Dockerfile
+    image: ghcr.io/stoyanchorbov/deliverease-backend:latest
     ports:
       - "8081:8081"
     environment:
@@ -40,9 +36,7 @@
 
   view:
     container_name: web_view
-    build:
-      context: .
-      dockerfile: View/Dockerfile
+    image: ghcr.io/stoyanchorbov/deliverease-nuxt:latest
     ports:
       - "3000:3000"
     depends_on:
