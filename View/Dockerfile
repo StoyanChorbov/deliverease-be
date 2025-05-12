@@ -1,15 +1,30 @@
-ARG NODE_VERSION=22.13.1
-FROM node:${NODE_VERSION}-slim AS base
-ENV NODE_ENV=development
-WORKDIR /app
+# Use small image for smaller size
+ARG NODE_VERSION=22
+FROM node:${NODE_VERSION}-alpine AS build
 
-# Build
-FROM base AS build
-WORKDIR /app
-COPY View/package*.json ./
-RUN npm install
+# Setup environment
+#ENV PNPM_HOME="/pnpm"
+#ENV PATH="${PNPM_HOME}:${PATH}"
+RUN corepack enable
 
-FROM base
-COPY --from=build /app/node_modules /app/node_modules
-COPY View/. /app/
-CMD ["npm", "run", "dev"]
+# Copy package config files to the image
+WORKDIR /app
+COPY View/package.json View/pnpm-lock.yaml ./
+RUN pnpm i # Install dependencies
+
+# Copy and build the application
+COPY View/. ./
+RUN pnpm run build
+
+# Install production dependencies
+FROM node:${NODE_VERSION}-alpine
+WORKDIR /app
+COPY --from=build /app/.output ./
+
+# Build the application
+ENV HOST=0.0.0.0
+ENV PORT=3000
+
+# Start the application
+EXPOSE 3000
+CMD ["node", "/app/server/index.mjs"]
