@@ -8,7 +8,8 @@ interface MapMarker {
     label: string;
 }
 
-mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_PUBLIC_KEY;
+const runtimeConfig = useRuntimeConfig();
+mapboxgl.accessToken = runtimeConfig.public.mapboxKey;
 
 console.log("key: ", mapboxgl.accessToken)
 

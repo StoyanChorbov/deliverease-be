@@ -40,7 +40,7 @@ services:
     image: ghcr.io/stoyanchorbov/deliverease-nuxt:latest
     pull_policy: always
     environment:
-      - VITE_MAPBOX_PUBLIC_KEY=pk.eyJ1Ijoic2xhenkiLCJhIjoiY204NjA0NWF1MjY3cTJrc2F2b2NwdWozeCJ9.hnt0ctjDcF1VDr3TGyfldA
+      - VITE_MAPBOX_PUBLIC_KEY=${VITE_MAPBOX_PUBLIC_KEY}
     ports:
       - "3000:3000"
     depends_on:
