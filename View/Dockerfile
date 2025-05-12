@@ -24,6 +24,7 @@ COPY --from=build /app/.output ./
 # Build the application
 ENV HOST=0.0.0.0
 ENV PORT=3000
+ENV VITE_MAPBOX_PUBLIC_KEY=pk.eyJ1Ijoic2xhenkiLCJhIjoiY204NjA0NWF1MjY3cTJrc2F2b2NwdWozeCJ9.hnt0ctjDcF1VDr3TGyfldA
 
 # Start the application
 EXPOSE 3000
