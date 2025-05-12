@@ -19,14 +19,14 @@ services:
   application:
     container_name: application
     image: ghcr.io/stoyanchorbov/deliverease-backend:latest
-    ports:
-      - "8081:8081"
     environment:
       - DB_HOST=postgres_db
       - DB_PORT=5432
       - DB_NAME=deliverease_db
       - DB_USER=deliverease_db_user
       - DB_PASS=deliverease_db_pass
+    ports:
+      - "8081:8081"
     depends_on:
       postgres_db:
         condition: service_healthy
@@ -37,6 +37,8 @@ services:
   view:
     container_name: web_view
     image: ghcr.io/stoyanchorbov/deliverease-nuxt:latest
+    environment:
+      - VITE_MAPBOX_PUBLIC_KEY=${VITE_MAPBOX_PUBLIC_KEY}
     ports:
       - "3000:3000"
     depends_on:

@@ -18,7 +18,9 @@ services:
   
   application:
     container_name: application
-    image: ghcr.io/stoyanchorbov/deliverease-backend:latest
+    build:
+      context: .
+      dockerfile: Application/Dockerfile
     ports:
       - "8081:8081"
     environment:
@@ -36,7 +38,9 @@ services:
 
   view:
     container_name: web_view
-    image: ghcr.io/stoyanchorbov/deliverease-nuxt:latest
+    build:
+      context: .
+      dockerfile: View/Dockerfile
     ports:
       - "3000:3000"
     depends_on:
