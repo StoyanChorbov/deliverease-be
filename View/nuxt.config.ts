@@ -27,5 +27,10 @@ export default defineNuxtConfig({
         plugins: [
             tailwindcss(),
         ]
+    },
+    runtimeConfig: {
+        public: {
+            mapboxKey: process.env.VITE_MAPBOX_PUBLIC_KEY,
+        }
     }
-})
+});

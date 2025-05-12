@@ -150,6 +150,3 @@ View/.DS_Store
 View/.env
 View/.env.*
 View/!.env.example
-
-# Migrations
-#/Repository/Migrations
