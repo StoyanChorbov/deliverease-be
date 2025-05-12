@@ -5,8 +5,8 @@ on:
     branches: ["deploy"]
 env:
   REGISTRY: ghcr.io
-  BACKEND_IMAGE_NAME: "${{ github.repository_owner }}/deliverease-backend"
-  NUXT_IMAGE_NAME: "${{ github.repository_owner }}/deliverease-nuxt"
+  BACKEND_IMAGE_NAME: "stoyanchorbov/deliverease-backend"
+  NUXT_IMAGE_NAME: "stoyanchorbov/deliverease-nuxt"
   
 
 jobs:
