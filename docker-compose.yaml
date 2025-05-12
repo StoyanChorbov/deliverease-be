@@ -1,4 +1,4 @@
-﻿services:
+services:
   postgres_db:
     container_name: postgres_db
     image: postgres:17.2
