@@ -26,9 +26,6 @@ export default defineNuxtConfig({
         },
         plugins: [
             tailwindcss(),
-        ],
-        define: {
-            MAPBOX_ACCESS_TOKEN: JSON.stringify(process.env.MAPBOX_ACCESS_TOKEN)
-        }
+        ]
     }
 })

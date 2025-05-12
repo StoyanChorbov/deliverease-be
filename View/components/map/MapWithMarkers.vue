@@ -8,9 +8,7 @@ interface MapMarker {
     label: string;
 }
 
-mapboxgl.accessToken = process.env.MAPBOX_PUBLIC_KEY;
-
-console.log(mapboxgl.accessToken);
+mapboxgl.accessToken = import.meta.env.VITE_MAPBOX_PUBLIC_KEY;
 
 const mapContainer = ref<HTMLDivElement | null>(null);
 
