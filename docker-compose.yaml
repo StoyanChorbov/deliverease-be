@@ -1,50 +1,56 @@
 services:
-  postgres_db:
-    container_name: postgres_db
-    image: postgres:17.2
-    environment:
-      POSTGRES_USER: deliverease_db_user
-      POSTGRES_PASSWORD: deliverease_db_pass
-      POSTGRES_DB: deliverease_db
-    volumes:
-      - db_data:/var/lib/postgresql/data
-    networks:
-      - backend
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U deliverease_db_user -d deliverease_db" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-  
-  application:
-    container_name: application
-    image: ghcr.io/stoyanchorbov/deliverease-backend:latest
-    pull_policy: always
-    environment:
-      - DB_HOST=postgres_db
-      - DB_PORT=5432
-      - DB_NAME=deliverease_db
-      - DB_USER=deliverease_db_user
-      - DB_PASS=deliverease_db_pass
-    ports:
-      - "8081:8081"
-    depends_on:
-      postgres_db:
-        condition: service_healthy
-    networks:
-      - backend
-      - web_app
+#  postgres_db:
+#    container_name: postgres_db
+#    image: postgres:17.2
+#    environment:
+#      POSTGRES_USER: deliverease_db_user
+#      POSTGRES_PASSWORD: deliverease_db_pass
+#      POSTGRES_DB: deliverease_db
+#    volumes:
+#      - db_data:/var/lib/postgresql/data
+#    networks:
+#      - backend
+#    healthcheck:
+#      test: [ "CMD-SHELL", "pg_isready -U deliverease_db_user -d deliverease_db" ]
+#      interval: 10s
+#      timeout: 5s
+#      retries: 5
+#  
+#  application:
+#    container_name: application
+##    image: ghcr.io/stoyanchorbov/deliverease-backend:latest
+##    pull_policy: always
+#    build:
+#      context: .
+#      dockerfile: Application/Dockerfile
+#    environment:
+#      - DB_HOST=postgres_db
+#      - DB_PORT=5432
+#      - DB_NAME=deliverease_db
+#      - DB_USER=deliverease_db_user
+#      - DB_PASS=deliverease_db_pass
+#    ports:
+#      - "8081:8081"
+#    depends_on:
+#      postgres_db:
+#        condition: service_healthy
+#    networks:
+#      - backend
+#      - web_app
 
   view:
     container_name: web_view
+#    build:
+#      context: .
+#      dockerfile: View/Dockerfile
     image: ghcr.io/stoyanchorbov/deliverease-nuxt:latest
     pull_policy: always
     environment:
       - VITE_MAPBOX_PUBLIC_KEY=pk.eyJ1Ijoic2xhenkiLCJhIjoiY204NjA0NWF1MjY3cTJrc2F2b2NwdWozeCJ9.hnt0ctjDcF1VDr3TGyfldA
     ports:
       - "3000:3000"
-    depends_on:
-      - application
+#    depends_on:
+#      - application
     networks:
       - web_app
 
