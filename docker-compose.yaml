@@ -19,6 +19,7 @@ services:
   application:
     container_name: application
     image: ghcr.io/stoyanchorbov/deliverease-backend:latest
+    pull_policy: always
     environment:
       - DB_HOST=postgres_db
       - DB_PORT=5432
@@ -37,6 +38,7 @@ services:
   view:
     container_name: web_view
     image: ghcr.io/stoyanchorbov/deliverease-nuxt:latest
+    pull_policy: always
     environment:
       - VITE_MAPBOX_PUBLIC_KEY=${VITE_MAPBOX_PUBLIC_KEY}
     ports:

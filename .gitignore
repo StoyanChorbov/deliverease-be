@@ -128,9 +128,6 @@ riderModule.iml
 *.key
 *.pfx
 
-# Migrations
-#/Repository/Migrations
-
 # Nuxt dev/build outputs
 View/.output
 View/.data
@@ -155,4 +152,4 @@ View/.env.*
 View/!.env.example
 
 # Migrations
-/Repository/Migrations
+#/Repository/Migrations
