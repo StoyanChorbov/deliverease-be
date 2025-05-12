@@ -23,7 +23,7 @@ jobs:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN  }}
-      - name: Build nuxt image and push to registry
+      - name: Build backend image and push to registry
         uses: docker/build-push-action@v4 
         with:
           context: .
