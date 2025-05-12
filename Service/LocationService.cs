@@ -12,6 +12,8 @@ public class LocationService(LocationRepository locationRepository)
         var location = new Location
         {
             Place = locationDto.Place,
+            Street = locationDto.Street,
+            Number = locationDto.Number,
             Region = locationDto.Region,
             Latitude = locationDto.Latitude,
             Longitude = locationDto.Longitude

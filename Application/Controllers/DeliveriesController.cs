@@ -20,23 +20,36 @@ public class DeliveriesController(DeliveryService deliveryService) : ControllerB
             return Unauthorized();
         }
 
-        await deliveryService.AddDeliveryAsync(
+        var deliveryId = await deliveryService.AddDeliveryAsync(
             deliveryAddDto,
             User.Identity?.Name ?? throw new Exception("User not found")
         );
-        return Ok();
+        
+        return Ok(deliveryId);
     }
 
     // Get delivery by id
     [HttpGet("{id:guid}")]
-    [Authorize(Roles = UserRoles.Admin)]
+    [Authorize]
     public async Task<ActionResult<DeliveryDto>> GetDelivery(Guid id)
     {
-        return await deliveryService.GetDeliveryAsync(id);
+        return Ok(await deliveryService.GetDeliveryAsync(id));
+    }
+
+    [HttpGet("past")]
+    [Authorize]
+    public async Task<ActionResult<List<UserDeliveryDto>>> GetPastDeliveries()
+    {
+        var username = User.Identity?.Name;
+        if (username == null)
+            return Unauthorized();
+
+        var deliveries = await deliveryService.GetPastDeliveriesAsync(username);
+        return Ok(deliveries);
     }
 
     // Get deliveries by starting and ending location
-    [HttpGet("/deliveries/locations/{startingLocationRegion}/{endingLocationRegion}")]
+    [HttpGet("locations/{startingLocationRegion}/{endingLocationRegion}")]
     public async Task<ActionResult<List<DeliveryDto>>> GetDeliveriesByLocations(
         string startingLocationRegion, string endingLocationRegion)
     {

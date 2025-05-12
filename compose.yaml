@@ -13,7 +13,7 @@
     networks:
       - backend
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U deliverease_db_user" ]
+      test: [ "CMD-SHELL", "pg_isready -U deliverease_db_user -d deliverease_db" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -26,6 +26,9 @@
     ports:
       - "8081:8081"
     environment:
+      - DB_HOST=postgres_db
+      - DB_PORT=5432
+      - DB_NAME=deliverease_db
       - DB_USER=deliverease_db_user
       - DB_PASS=deliverease_db_pass
     depends_on:

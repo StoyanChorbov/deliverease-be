@@ -75,6 +75,18 @@ public class UsersController(UserService userService) : ControllerBase
         return Ok(new { accessToken = token, refreshToken });
     }
 
+    [HttpPost("logout")]
+    [Authorize]
+    public async Task<IActionResult> Logout()
+    {
+        var username = User.Identity?.Name;
+        if (username == null)
+            return Unauthorized();
+
+        await userService.LogoutAsync(username);
+        return Ok();
+    }
+
     // Register a new user
     [HttpPost]
     public async Task<IActionResult> Register([FromBody] UserRegisterDto user)

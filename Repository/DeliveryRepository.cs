@@ -82,4 +82,19 @@ public class DeliveryRepository(DelivereaseDbContext context)
         _deliveries.Remove(delivery);
         await context.SaveChangesAsync();
     }
+
+    public async Task<List<Delivery>> GetPastDeliveriesAsync(string username)
+    {
+        var deliveries = await _deliveries
+            .AsNoTrackingWithIdentityResolution()
+            .Include(d => d.StartingLocation)
+            .Include(d => d.EndingLocation)
+            .Include(d => d.Sender)
+            .Include(d => d.Deliverer)
+            .Include(d => d.Recipients)
+            .Where(d => d.Sender.UserName == username)
+            .ToListAsync();
+
+        return deliveries;
+    }
 }

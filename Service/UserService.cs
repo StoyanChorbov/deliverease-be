@@ -16,7 +16,6 @@ public class UserService(
     UserManager<User> userManager,
     IConfiguration configuration)
 {
-
     public async Task<UserDto> GetAsync(string username)
     {
         return ToDto(await GetUserByUsernameAsync(username));
@@ -35,7 +34,11 @@ public class UserService(
 
     public async Task<List<User>> GetAllByUsernamesAsync(List<string> usernames)
     {
-        return await userRepository.GetAllByUsernamesAsync(usernames);
+        return await userRepository.GetAllByUsernamesAsync(
+            usernames: usernames,
+            useNavigationalProperties: false,
+            isReadOnly: false
+        );
     }
 
     public async Task<User?> GetByJwtTokenAsync(string token)
@@ -222,4 +225,16 @@ public class UserService(
             Guid.NewGuid().ToString(),
             DateTime.UtcNow.AddDays(7)
         );
+
+    public async Task LogoutAsync(string username)
+    {
+        var user = await userManager.FindByNameAsync(username);
+
+        if (user == null)
+            throw new Exception("User not found");
+
+        var token = await tokenRepository.GetTokenByUserId(user.Id);
+
+        await tokenRepository.RemoveAsync(token);
+    }
 }

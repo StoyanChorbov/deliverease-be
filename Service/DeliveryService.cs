@@ -11,7 +11,7 @@ public class DeliveryService(
     LocationService locationService,
     UserService userService)
 {
-    public async Task AddDeliveryAsync(DeliveryAddDto deliveryAddDto, string username)
+    public async Task<string> AddDeliveryAsync(DeliveryAddDto deliveryAddDto, string username)
     {
         var startLocation = await locationService.AddLocationAsync(deliveryAddDto.StartLocation);
         var endLocation = await locationService.AddLocationAsync(deliveryAddDto.EndLocation);
@@ -31,12 +31,8 @@ public class DeliveryService(
             Recipients = recipients,
             IsFragile = deliveryAddDto.IsFragile
         };
-
-        await userService.AddDeliveryRecipientsAsync(
-            delivery,
-            recipients.Select(r => r.UserName!).ToList()
-        );
         await deliveryRepository.AddAsync(delivery);
+        return delivery.Id.ToString();
     }
 
     public async Task<DeliveryDto> GetDeliveryAsync(Guid id)
@@ -48,6 +44,14 @@ public class DeliveryService(
     {
         var deliveries = await deliveryRepository.GetAllAsync();
         return deliveries.Select(ToFindableDto).ToList();
+    }
+    
+    public async Task<List<UserDeliveryDto>> GetPastDeliveriesAsync(string username)
+    {
+        var pastDeliveries = await deliveryRepository.GetPastDeliveriesAsync(username);
+        return pastDeliveries
+            .Select(ToUserDeliveryDto)
+            .ToList();
     }
 
     public async Task<List<DeliveryDto>> GetAllByStartingAndEndingLocation(string startingLocationRegion,
@@ -89,6 +93,8 @@ public class DeliveryService(
             delivery.Category.ToString(),
             new LocationDto(
                 delivery.StartingLocation.Place,
+                delivery.StartingLocation.Street,
+                delivery.StartingLocation.Number,
                 delivery.StartingLocation.Region,
                 delivery.StartingLocation.Latitude,
                 delivery.StartingLocation.Longitude
@@ -96,6 +102,8 @@ public class DeliveryService(
             delivery.StartingLocationRegion,
             new LocationDto(
                 delivery.EndingLocation.Place,
+                delivery.EndingLocation.Street,
+                delivery.EndingLocation.Number,
                 delivery.EndingLocationRegion,
                 delivery.EndingLocation.Latitude,
                 delivery.EndingLocation.Longitude
@@ -111,22 +119,36 @@ public class DeliveryService(
     }
 
     private static FindableDeliveryDto ToFindableDto(Delivery delivery) =>
-        new FindableDeliveryDto(
+        new(
             delivery.Id.ToString(),
             delivery.Name,
             delivery.Category.ToString(),
             new LocationDto(
                 delivery.StartingLocation.Place,
+                delivery.StartingLocation.Street,
+                delivery.StartingLocation.Number,
                 delivery.StartingLocation.Region,
                 delivery.StartingLocation.Latitude,
                 delivery.StartingLocation.Longitude
             ),
             new LocationDto(
                 delivery.EndingLocation.Place,
+                delivery.EndingLocation.Street,
+                delivery.EndingLocation.Number,
                 delivery.EndingLocation.Region,
                 delivery.EndingLocation.Latitude,
                 delivery.EndingLocation.Longitude
             ),
+            delivery.IsFragile
+        );
+    
+    private static UserDeliveryDto ToUserDeliveryDto(Delivery delivery) =>
+        new(
+            delivery.Id.ToString(),
+            delivery.Name,
+            delivery.StartingLocationRegion,
+            delivery.EndingLocationRegion,
+            delivery.Category.ToString(),
             delivery.IsFragile
         );
 }

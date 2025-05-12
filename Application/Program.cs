@@ -16,7 +16,9 @@ public class Program
         var connectionString = builder
             .Configuration
             .GetConnectionString("DefaultConnection")
-            ?.Replace("${DB_CONN}", Environment.GetEnvironmentVariable("DB_CONN"))
+            ?.Replace("${DB_HOST}", Environment.GetEnvironmentVariable("DB_HOST"))
+            .Replace("${DB_PORT}", Environment.GetEnvironmentVariable("DB_PORT"))
+            .Replace("${DB_NAME}", Environment.GetEnvironmentVariable("DB_NAME"))
             .Replace("${DB_USER}", Environment.GetEnvironmentVariable("DB_USER"))
             .Replace("${DB_PASS}", Environment.GetEnvironmentVariable("DB_PASS"));
 

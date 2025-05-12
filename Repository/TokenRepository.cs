@@ -1,3 +1,4 @@
+using System.Collections;
 using Microsoft.EntityFrameworkCore;
 using Model;
 using Repository.Context;
@@ -16,6 +17,26 @@ public class TokenRepository(DelivereaseDbContext context)
     public async Task AddAsync(JwtToken token)
     {
         await _tokens.AddAsync(token);
+        await context.SaveChangesAsync();
+    }
+
+    public async Task<JwtToken> GetTokenByUserId(Guid userId)
+    {
+        var query = _tokens
+            .AsNoTrackingWithIdentityResolution()
+            .Where(t => t.UserId == userId);
+        
+        var token = await query.FirstOrDefaultAsync();
+        if (token == null)
+        {
+            throw new ArgumentException("Token not found");
+        }
+        return token;
+    }
+    
+    public async Task RemoveAsync(JwtToken token)
+    {
+        _tokens.Remove(token);
         await context.SaveChangesAsync();
     }
 }
