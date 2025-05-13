@@ -7,16 +7,16 @@ FROM node:${NODE_VERSION}-alpine AS build
 #ENV PATH="${PNPM_HOME}:${PATH}"
 RUN corepack enable
 
-# Copy package config files to the image
+# Copy package config files to the image and install dependencies
 WORKDIR /app
 COPY View/package.json View/pnpm-lock.yaml ./
-RUN pnpm i # Install dependencies
+RUN pnpm i
 
 # Copy and build the application
 COPY View/. ./
 RUN pnpm run build
 
-# Install production dependencies
+# Copy the compiled application to a new image
 FROM node:${NODE_VERSION}-alpine
 WORKDIR /app
 COPY --from=build /app/.output ./
