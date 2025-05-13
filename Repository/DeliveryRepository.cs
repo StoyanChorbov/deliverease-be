@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Model;
+using Model.DTO.Delivery;
 using Repository.Context;
 
 namespace Repository;
@@ -60,6 +61,20 @@ public class DeliveryRepository(DelivereaseDbContext context)
 
         return deliveries;
     }
+
+    public async Task<List<Delivery>> GetAllToDeliver(string username) =>
+        await _deliveries
+            .Include(d => d.StartingLocation)
+            .Include(d => d.EndingLocation)
+            .Where(d => d.Deliverer != null && d.Deliverer.UserName == username)
+            .ToListAsync();
+    
+    public async Task<List<Delivery>> GetAllToReceive(string username) =>
+        await _deliveries
+            .Include(d => d.StartingLocation)
+            .Include(d => d.EndingLocation)
+            .Where(d => d.Recipients.Any(r => r.UserName == username))
+            .ToListAsync();
 
     public async Task UpdateAsync(Delivery delivery)
     {

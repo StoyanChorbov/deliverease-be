@@ -45,7 +45,7 @@ public class DeliveryService(
         var deliveries = await deliveryRepository.GetAllAsync();
         return deliveries.Select(ToFindableDto).ToList();
     }
-    
+
     public async Task<List<UserDeliveryDto>> GetPastDeliveriesAsync(string username)
     {
         var pastDeliveries = await deliveryRepository.GetPastDeliveriesAsync(username);
@@ -61,6 +61,17 @@ public class DeliveryService(
                 endingLocationRegion))
             .Select(ToDto)
             .ToList();
+    }
+
+    public async Task<Tuple<List<DeliveryListDto>, List<DeliveryListDto>>> GetCurrentDeliveriesAsync(string username)
+    {
+        var toDeliver = await deliveryRepository.GetAllToDeliver(username);
+        var toReceive = await deliveryRepository.GetAllToReceive(username);
+
+        return new Tuple<List<DeliveryListDto>, List<DeliveryListDto>>(
+            toDeliver.Select(ToDeliveryListDto).ToList(),
+            toReceive.Select(ToDeliveryListDto).ToList()
+        );
     }
 
     public async Task UpdateDeliveryAsync(Guid id, DeliveryDto deliveryDto)
@@ -112,7 +123,7 @@ public class DeliveryService(
             delivery.Sender.UserName ?? throw new Exception("User not found"),
             delivery.Deliverer?.UserName,
             delivery.Recipients.IsNullOrEmpty()
-                ? [] 
+                ? []
                 : delivery.Recipients.Select(r => r.UserName ?? "").ToList(),
             delivery.IsFragile
         );
@@ -141,13 +152,37 @@ public class DeliveryService(
             ),
             delivery.IsFragile
         );
-    
+
     private static UserDeliveryDto ToUserDeliveryDto(Delivery delivery) =>
         new(
             delivery.Id.ToString(),
             delivery.Name,
             delivery.StartingLocationRegion,
             delivery.EndingLocationRegion,
+            delivery.Category.ToString(),
+            delivery.IsFragile
+        );
+
+    private static DeliveryListDto ToDeliveryListDto(Delivery delivery) =>
+        new(
+            delivery.Id.ToString(),
+            delivery.Name,
+            new LocationDto(
+                delivery.StartingLocation.Place,
+                delivery.StartingLocation.Street,
+                delivery.StartingLocation.Number,
+                delivery.StartingLocation.Region,
+                delivery.StartingLocation.Latitude,
+                delivery.StartingLocation.Longitude
+            ),
+            new LocationDto(
+                delivery.EndingLocation.Place,
+                delivery.EndingLocation.Street,
+                delivery.EndingLocation.Number,
+                delivery.EndingLocation.Region,
+                delivery.EndingLocation.Latitude,
+                delivery.EndingLocation.Longitude
+            ),
             delivery.Category.ToString(),
             delivery.IsFragile
         );

@@ -11,9 +11,6 @@ interface MapMarker {
 const runtimeConfig = useRuntimeConfig();
 mapboxgl.accessToken = runtimeConfig.public.mapboxKey;
 
-console.log(runtimeConfig)
-console.log("key: ", mapboxgl.accessToken)
-
 const mapContainer = ref<HTMLDivElement | null>(null);
 
 const markers: MapMarker[] = [

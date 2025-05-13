@@ -36,6 +36,7 @@ public class DeliveriesController(DeliveryService deliveryService) : ControllerB
         return Ok(await deliveryService.GetDeliveryAsync(id));
     }
 
+    // Get the deliveries that have been created by the logged-in user
     [HttpGet("past")]
     [Authorize]
     public async Task<ActionResult<List<UserDeliveryDto>>> GetPastDeliveries()
@@ -49,13 +50,31 @@ public class DeliveriesController(DeliveryService deliveryService) : ControllerB
     }
 
     // Get deliveries by starting and ending location
-    [HttpGet("locations/{startingLocationRegion}/{endingLocationRegion}")]
+    [HttpGet("options/{startingLocationRegion}/{endingLocationRegion}")]
     public async Task<ActionResult<List<DeliveryDto>>> GetDeliveriesByLocations(
         string startingLocationRegion, string endingLocationRegion)
     {
         var deliveries =
             await deliveryService.GetAllByStartingAndEndingLocation(startingLocationRegion, endingLocationRegion);
         return Ok(deliveries);
+    }
+    
+    // Get packages to be delivered by the user and to be received by the user
+    [HttpGet("current")]
+    [Authorize]
+    public async Task<IActionResult> GetDeliveriesAsync()
+    {
+        var username = User.Identity?.Name;
+        if (username == null)
+            return Unauthorized();
+        
+        var deliveries = await deliveryService.GetCurrentDeliveriesAsync(username);
+        
+        return Ok(new
+        {
+            toDeliver = deliveries.Item1,
+            toReceive = deliveries.Item2
+        });
     }
 
     // Update the delivery using id and dto
