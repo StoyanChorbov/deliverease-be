@@ -30,7 +30,7 @@ export default defineNuxtConfig({
     },
     runtimeConfig: {
         public: {
-            mapboxKey: process.env.VITE_MAPBOX_PUBLIC_KEY,
+            mapboxKey: pk.eyJ1Ijoic2xhenkiLCJhIjoiY204NjA0NWF1MjY3cTJrc2F2b2NwdWozeCJ9.hnt0ctjDcF1VDr3TGyfldA,
         }
     }
 });
