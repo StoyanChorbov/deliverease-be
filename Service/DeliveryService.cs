@@ -54,12 +54,12 @@ public class DeliveryService(
             .ToList();
     }
 
-    public async Task<List<DeliveryDto>> GetAllByStartingAndEndingLocation(string startingLocationRegion,
+    public async Task<List<DeliveryListDto>> GetAllByStartingAndEndingLocation(string startingLocationRegion,
         string endingLocationRegion)
     {
         return (await deliveryRepository.GetAllByStartingAndEndingLocation(startingLocationRegion,
                 endingLocationRegion))
-            .Select(ToDto)
+            .Select(ToDeliveryListDto)
             .ToList();
     }
 
@@ -72,6 +72,12 @@ public class DeliveryService(
             toDeliver.Select(ToDeliveryListDto).ToList(),
             toReceive.Select(ToDeliveryListDto).ToList()
         );
+    }
+
+    public async Task SetDeliveryDelivererAsync(string deliveryId, string username)
+    {
+        var user = await userService.GetUserByUsernameAsync(username);
+        await deliveryRepository.SetDeliveryDelivererAsync(deliveryId, user);
     }
 
     public async Task UpdateDeliveryAsync(Guid id, DeliveryDto deliveryDto)
@@ -121,7 +127,7 @@ public class DeliveryService(
             ),
             delivery.EndingLocationRegion,
             delivery.Sender.UserName ?? throw new Exception("User not found"),
-            delivery.Deliverer?.UserName,
+            delivery.Deliverer != null,
             delivery.Recipients.IsNullOrEmpty()
                 ? []
                 : delivery.Recipients.Select(r => r.UserName ?? "").ToList(),

@@ -6,6 +6,8 @@ services:
       POSTGRES_USER: deliverease_db_user
       POSTGRES_PASSWORD: deliverease_db_pass
       POSTGRES_DB: deliverease_db
+    ports:
+      - "5434:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
@@ -18,10 +20,10 @@ services:
 
   application:
     container_name: application
-#    image: ghcr.io/stoyanchorbov/deliverease-backend:latest
-    build:
-      context: .
-      dockerfile: Application/Dockerfile
+    image: ghcr.io/stoyanchorbov/deliverease-backend:latest
+#    build:
+#      context: .
+#      dockerfile: Application/Dockerfile
     pull_policy: always
     environment:
       - DB_HOST=postgres_db
@@ -31,6 +33,14 @@ services:
       - DB_PASS=deliverease_db_pass
     ports:
       - "8081:8081"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.backend.rule=Host(`schorbov.eu`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.backend.entrypoints=websecure"
+      - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
+      - "traefik.http.services.backend.loadbalancer.server.port=8081"
+      - "traefik.http.middlewares.strip-api-path.stripprefix.prefixes=/api"
+      - "traefik.http.routers.backend.middlewares=strip-api-path"
     depends_on:
       postgres_db:
         condition: service_healthy

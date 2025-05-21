@@ -51,9 +51,9 @@ public class DeliveryRepository(DelivereaseDbContext context)
             .Include(d => d.StartingLocation)
             .Include(d => d.EndingLocation)
             .Include(d => d.Sender)
-            .Include(d => d.Deliverer)
             .Include(d => d.Recipients)
             .Where(d =>
+                d.DelivererId == null &&
                 d.StartingLocationRegion == startingLocationRegion &&
                 d.EndingLocationRegion == endingLocationRegion)
             .Take(15)
@@ -111,5 +111,18 @@ public class DeliveryRepository(DelivereaseDbContext context)
             .ToListAsync();
 
         return deliveries;
+    }
+
+    public async Task SetDeliveryDelivererAsync(string deliveryId, User user)
+    {
+        var delivery = await _deliveries
+            .Include(d => d.Deliverer)
+            .FirstOrDefaultAsync(d => d.Id.ToString() == deliveryId);
+
+        if (delivery == null)
+            throw new ArgumentException("Delivery not found");
+
+        delivery.Deliverer = user;
+        await context.SaveChangesAsync();
     }
 }

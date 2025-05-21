@@ -51,7 +51,8 @@ public class DeliveriesController(DeliveryService deliveryService) : ControllerB
 
     // Get deliveries by starting and ending location
     [HttpGet("options/{startingLocationRegion}/{endingLocationRegion}")]
-    public async Task<ActionResult<List<DeliveryDto>>> GetDeliveriesByLocations(
+    [Authorize]
+    public async Task<ActionResult<List<DeliveryListDto>>> GetDeliveriesByLocations(
         string startingLocationRegion, string endingLocationRegion)
     {
         var deliveries =
@@ -75,6 +76,18 @@ public class DeliveriesController(DeliveryService deliveryService) : ControllerB
             toDeliver = deliveries.Item1,
             toReceive = deliveries.Item2
         });
+    }
+    
+    [HttpPost("deliver")]
+    [Authorize]
+    public async Task<IActionResult> SetDeliveryDeliverer([FromBody] DeliveryDelivererRequestDto request)
+    {
+        var username = User.Identity?.Name;
+        if (username == null)
+            return Unauthorized();
+
+        await deliveryService.SetDeliveryDelivererAsync(request.DeliveryId, username);
+        return Ok();
     }
 
     // Update the delivery using id and dto
