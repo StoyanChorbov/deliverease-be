@@ -41,6 +41,8 @@ public class DelivereaseDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
             .WithMany(u => u.JwtTokens)
             .HasForeignKey(t => t.UserId);
 
+        modelBuilder.HasPostgresEnum<DeliveryCategory>();
+
         base.OnModelCreating(modelBuilder);
     }
 }
