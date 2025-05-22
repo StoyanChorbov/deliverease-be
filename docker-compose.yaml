@@ -20,7 +20,7 @@ services:
 
   application:
     container_name: application
-    image: ghcr.io/stoyanchorbov/deliverease-backend:latest
+    image: ghcr.io/stoyanchorbov/deliverease-backend:0.0.1
 #    build:
 #      context: .
 #      dockerfile: Application/Dockerfile

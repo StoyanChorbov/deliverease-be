@@ -30,7 +30,7 @@ jobs:
           file: Application/Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE_NAME }}:{{ github.sha }}
+          tags: ${{ env.REGISTRY }}/${{ env.BACKEND_IMAGE_NAME }}:0.0.1
       - name: Build nuxt image and push to registry
         uses: docker/build-push-action@v4
         with:
@@ -38,4 +38,4 @@ jobs:
           file: View/Dockerfile
           platforms: linux/amd64
           push: true
-          tags: ${{ env.REGISTRY }}/${{ env.NUXT_IMAGE_NAME }}:{{ github.sha }}
+          tags: ${{ env.REGISTRY }}/${{ env.NUXT_IMAGE_NAME }}:0.0.1
