@@ -38,6 +38,10 @@ public class DelivereaseDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
             .WithMany(u => u.DelivererDeliveries)
             .HasForeignKey(d => d.DelivererId);
 
+        modelBuilder.Entity<Delivery>()
+            .Property(d => d.Category)
+            .HasConversion<string>();
+
         modelBuilder.Entity<JwtToken>()
             .HasOne(t => t.User)
             .WithMany(u => u.JwtTokens)
