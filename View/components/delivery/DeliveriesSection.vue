@@ -1,20 +1,26 @@
 <script setup lang="ts">
-const props = defineProps<DeliveriesSectionProps>();
+import { formatLocation } from '~/composables/delivery/LocationService';
+import { type DeliveryRowDto } from '~/composables/delivery/types/DeliveryRowDto';
 
 interface DeliveriesSectionProps {
-    sectionTitle: string;
+	sectionTitle: string;
+	deliveries: DeliveryRowDto[];
 }
 
+const props = defineProps<DeliveriesSectionProps>();
 </script>
 
 <template>
-    <v-container>
-        <p class="text-h2 font-weight-bold text-center">{{ sectionTitle }}</p>
-        <DeliveryRow id="1" deliveryName="Delivery 1" startLocation="Location A" endLocation="Location B"/>
-        <DeliveryRow id="2" deliveryName="Delivery 2" startLocation="Location C" endLocation="Location D"/>
-    </v-container>
+	<v-container>
+		<p class="text-h2 font-weight-bold text-center">{{ sectionTitle }}</p>
+		<DeliveryRow
+			v-for="delivery in deliveries"
+			:id="delivery.id"
+			:deliveryName="delivery.name"
+			:startLocation="formatLocation(delivery.startingLocationDto).displayText"
+			:endLocation="formatLocation(delivery.endingLocationDto).displayText"
+		/>
+	</v-container>
 </template>
 
-<style scoped>
-
-</style>
+<style scoped></style>

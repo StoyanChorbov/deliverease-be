@@ -127,7 +127,7 @@ public class DeliveryService(
             ),
             delivery.EndingLocationRegion,
             delivery.Sender.UserName ?? throw new Exception("User not found"),
-            delivery.Deliverer != null,
+            delivery.Deliverer?.UserName,
             delivery.Recipients.IsNullOrEmpty()
                 ? []
                 : delivery.Recipients.Select(r => r.UserName ?? "").ToList(),

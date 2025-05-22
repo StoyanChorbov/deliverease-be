@@ -3,6 +3,7 @@ using Application.Util;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Model;
+using Npgsql;
 using Repository.Context;
 
 namespace Application;
@@ -22,8 +23,12 @@ public class Program
             .Replace("${DB_USER}", Environment.GetEnvironmentVariable("DB_USER"))
             .Replace("${DB_PASS}", Environment.GetEnvironmentVariable("DB_PASS"));
 
+        var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+        dataSourceBuilder.MapEnum<DeliveryCategory>();
+        var dataSource = dataSourceBuilder.Build();
+
         // Add database context
-        builder.Services.AddDbContext<DelivereaseDbContext>(options => { options.UseNpgsql(connectionString); });
+        builder.Services.AddDbContext<DelivereaseDbContext>(options => { options.UseNpgsql(dataSource); });
 
         // Add identity parameters
         builder.Services.AddIdentityCore<User>()
@@ -66,8 +71,6 @@ public class Program
             app.UseSwagger();
             app.UseSwaggerUI();
         }
-
-        // app.UseHttpsRedirection();  
 
         app.UseAuthentication();
         app.UseAuthorization();

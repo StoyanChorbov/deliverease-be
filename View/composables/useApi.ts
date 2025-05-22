@@ -1,8 +1,8 @@
 import {useAuth} from "~/composables/useAuth";
 import {$fetch} from "ofetch";
 
-// export const baseUrl = "https://deliverease-s39n.onrender.com";
-export const baseUrl = "http://localhost:8081";
+export const baseUrl = "https://schorbov.eu/api";
+// export const baseUrl = "http://localhost:8081";
 
 export const useApi = async <T>(url: string, options: any = {}) => {
     const auth = useAuth();

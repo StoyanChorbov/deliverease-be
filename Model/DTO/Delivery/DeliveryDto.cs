@@ -12,7 +12,7 @@ public record DeliveryDto(
     LocationDto EndingLocation,
     string EndingLocationRegion,
     string Sender,
-    bool HasDeliverer,
+    string? Deliverer,
     List<string> Recipients,
     bool IsFragile
 );

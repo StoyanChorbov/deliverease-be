@@ -63,7 +63,7 @@ public class DeliveriesController(DeliveryService deliveryService) : ControllerB
     // Get packages to be delivered by the user and to be received by the user
     [HttpGet("current")]
     [Authorize]
-    public async Task<IActionResult> GetDeliveriesAsync()
+    public async Task<IActionResult> GetCurrentDeliveriesAsync()
     {
         var username = User.Identity?.Name;
         if (username == null)

@@ -27,7 +27,7 @@ interface LocationQueryPropertiesDto {
 }
 
 interface LocationQueryContextDto {
-    adddress: LocationQueryAddressDto | undefined;
+    address: LocationQueryAddressDto | undefined;
     street: LocationQueryStreetDto | undefined;
     postcode: LocationQueryPostcodeDto | undefined;
     place: LocationQueryPlaceDto | undefined;
