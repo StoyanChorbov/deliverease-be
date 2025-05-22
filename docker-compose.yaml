@@ -32,13 +32,13 @@ services:
       - DB_USER=deliverease_db_user
       - DB_PASS=deliverease_db_pass
     ports:
-      - "8081:8081"
+      - "5000:5000"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(`schorbov.eu`) && PathPrefix(`/api`)"
       - "traefik.http.routers.backend.entrypoints=websecure"
       - "traefik.http.routers.backend.tls.certresolver=letsencrypt"
-      - "traefik.http.services.backend.loadbalancer.server.port=8081"
+      - "traefik.http.services.backend.loadbalancer.server.port=5000"
       - "traefik.http.middlewares.strip-api-path.stripprefix.prefixes=/api"
       - "traefik.http.routers.backend.middlewares=strip-api-path"
     depends_on:

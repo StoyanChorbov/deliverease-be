@@ -52,11 +52,7 @@ public class Program
         // Limit to http only
         builder.WebHost.ConfigureKestrel(options =>
         {
-            // options.ListenAnyIP(8080);
-            options.ListenAnyIP(8081, listenOptions =>
-            {
-                // listenOptions.UseHttps("/https/aspnetcore.pfx", "");
-            });
+            options.ListenAnyIP(5000);
         });
 
         var app = builder.Build();
