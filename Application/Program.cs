@@ -28,7 +28,7 @@ public class Program
         var dataSource = dataSourceBuilder.Build();
 
         // Add database context
-        builder.Services.AddDbContext<DelivereaseDbContext>(options => { options.UseNpgsql(dataSource); });
+        builder.Services.AddDbContext<DelivereaseDbContext>(options => options.UseNpgsql(dataSource));
 
         // Add identity parameters
         builder.Services.AddIdentityCore<User>()

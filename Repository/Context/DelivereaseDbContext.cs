@@ -21,6 +21,8 @@ public class DelivereaseDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.HasPostgresEnum<DeliveryCategory>();
+        
         modelBuilder.Entity<Delivery>()
             .HasOne(d => d.Sender)
             .WithMany(u => u.SenderDeliveries)
@@ -40,8 +42,6 @@ public class DelivereaseDbContext : IdentityDbContext<User, IdentityRole<Guid>, 
             .HasOne(t => t.User)
             .WithMany(u => u.JwtTokens)
             .HasForeignKey(t => t.UserId);
-
-        modelBuilder.HasPostgresEnum<DeliveryCategory>();
 
         base.OnModelCreating(modelBuilder);
     }
