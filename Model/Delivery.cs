@@ -1,9 +1,12 @@
+using System.ComponentModel.DataAnnotations.Schema;
+
 namespace Model;
 
 public class Delivery() : BaseEntity
 {
     public string Name { get; set; }
     public string Description { get; set; }
+    [Column(TypeName = "text")]
     public DeliveryCategory Category { get; set; }
     public Guid SenderId { get; set; }
     public User Sender { get; set; }
