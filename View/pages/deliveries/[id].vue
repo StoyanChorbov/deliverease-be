@@ -7,7 +7,7 @@ const id = route.params.id;
 
 const router = useRouter();
 
-const delivery = ref<DeliveryDetailsDto>({});
+const delivery = ref<DeliveryDetailsDto>();
 
 const handleDeliverPackage = async () => {
     const token = useAuth().getAccessToken() ?? "";
@@ -47,12 +47,13 @@ onMounted(async () => {
 		<v-col>
 			<v-card>
 				<v-card-title>Delivery Details</v-card-title>
-				<v-card-text>
+				<v-card-text v-if="delivery">
 					<p>Name: {{ delivery.name }}</p>
 					<p>Recipients: {{ delivery.recipients?.join(', ') }}</p>
 					<p>Category: {{ delivery.category }}</p>
 					<p>Description: {{ delivery.description }}</p>
 				</v-card-text>
+                <v-row v-else>Delivery not found</v-row>
 			</v-card>
 		</v-col>
         <v-btn variant="outlined" @click="handleDeliverPackage">Deliver package</v-btn>

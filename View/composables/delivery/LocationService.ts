@@ -32,9 +32,7 @@ export const getLocationSuggestions = async (
 };
 
 export const formatLocations = (locations: LocationDto[]) => {
-	return locations.map((location) => {
-		
-	});
+	return locations.map(formatLocation);
 }
 
 export const formatLocation = (location: LocationDto) => {
