@@ -31,8 +31,8 @@ services:
       - DB_NAME=deliverease_db
       - DB_USER=deliverease_db_user
       - DB_PASS=deliverease_db_pass
-    ports:
-      - "5000:5000"
+#    ports:
+#      - "5000:5000"
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.backend.rule=Host(`schorbov.eu`) && PathPrefix(`/api`)"
