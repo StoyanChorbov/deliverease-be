@@ -12,6 +12,9 @@ namespace Repository.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.AlterDatabase()
+                .Annotation("Npgsql:Enum:delivery_category", "food,clothes,electronics,other");
+
             migrationBuilder.CreateTable(
                 name: "AspNetRoles",
                 columns: table => new
@@ -205,7 +208,7 @@ namespace Repository.Migrations
                     Id = table.Column<Guid>(type: "uuid", nullable: false),
                     Name = table.Column<string>(type: "text", nullable: false),
                     Description = table.Column<string>(type: "text", nullable: false),
-                    Category = table.Column<int>(type: "integer", nullable: false),
+                    Category = table.Column<string>(type: "text", nullable: false),
                     SenderId = table.Column<Guid>(type: "uuid", nullable: false),
                     DelivererId = table.Column<Guid>(type: "uuid", nullable: true),
                     StartingLocationId = table.Column<Guid>(type: "uuid", nullable: false),

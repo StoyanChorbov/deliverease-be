@@ -12,7 +12,7 @@ using Repository.Context;
 namespace Repository.Migrations
 {
     [DbContext(typeof(DelivereaseDbContext))]
-    [Migration("20250509184048_Initial")]
+    [Migration("20250522184917_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -23,6 +23,7 @@ namespace Repository.Migrations
                 .HasAnnotation("ProductVersion", "8.0.15")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
+            NpgsqlModelBuilderExtensions.HasPostgresEnum(modelBuilder, "delivery_category", new[] { "food", "clothes", "electronics", "other" });
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
             modelBuilder.Entity("DeliveryUser", b =>
@@ -176,8 +177,9 @@ namespace Repository.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<int>("Category")
-                        .HasColumnType("integer");
+                    b.Property<string>("Category")
+                        .IsRequired()
+                        .HasColumnType("text");
 
                     b.Property<Guid?>("DelivererId")
                         .HasColumnType("uuid");
