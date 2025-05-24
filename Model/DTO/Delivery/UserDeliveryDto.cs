@@ -5,6 +5,6 @@ public record UserDeliveryDto(
     string Name,
     string StartLocationRegion,
     string EndLocationRegion,
-    string DeliveryCategory,
+    string Category,
     bool IsFragile
 );

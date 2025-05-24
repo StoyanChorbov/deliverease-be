@@ -4,13 +4,14 @@ import type {ValidationRule} from "vuetify/framework";
 import {useAuth} from "~/composables/useAuth";
 
 const {login} = useAuth();
+const router = useRouter();
 
 const form = ref<HTMLFormElement>();
 
 const username = ref('');
 const usernameRules: ValidationRule[] = [
     input => {
-        const minLength = 5;
+        const minLength = 3;
         return input.length >= minLength || `Username must be at least ${minLength} characters long`;
     }
 ]
@@ -35,6 +36,7 @@ const submit = async () => {
     if (form.value?.validate()) {
         // Perform login action
         await login(username.value, password.value);
+        router.push("/")
         error.value = "";
     } else {
         error.value = "There was an error when logging in";

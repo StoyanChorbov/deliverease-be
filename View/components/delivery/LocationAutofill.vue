@@ -8,6 +8,7 @@ import {
 
 interface LocationAutofillProps {
 	label: string;
+	onUpdateLocation: () => void;
 }
 
 const props = defineProps<LocationAutofillProps>();
@@ -32,7 +33,7 @@ const getSuggestions = async (input: string) => {
 <template>
 	<v-combobox
 		:label="label"
-        variant="outlined"
+		variant="outlined"
 		:items="formattedSuggestions"
 		:menu="true"
 		:no-filter="true"
@@ -40,5 +41,6 @@ const getSuggestions = async (input: string) => {
 		item-title="displayText"
 		return-object
 		@update:search="getSuggestions"
+		@update:model-value="onUpdateLocation"
 	></v-combobox>
 </template>

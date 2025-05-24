@@ -1,16 +1,37 @@
 <script setup lang="ts">
+const auth = useAuth();
+const router = useRouter();
 
+const logout = async () => {
+	auth.logout();
+	await router.push('/login');
+};
 </script>
 
 <template>
-    <header>
-        <nav>
-            <ul class="d-flex justify-space-around bg-black">
-                <li><NuxtLink to="/" class="text-decoration-none text-blue">Home</NuxtLink></li>
-                <li><NuxtLink to="/deliveries/add" class="text-decoration-none">Add delivery</NuxtLink></li>
-                <li><NuxtLink href="/register" class="text-decoration-none">Register</NuxtLink></li>
-                <li><NuxtLink href="/login" class="text-decoration-none">Login</NuxtLink></li>
-            </ul>
-        </nav>
-    </header>
+	<header>
+		<v-app-bar>
+			<v-container class="flex justify-between">
+				<v-btn v-if="auth.isAuthenticated.value" to="/">Home</v-btn>
+				<v-btn v-if="auth.isAuthenticated.value" to="/deliveries/add"
+					>Add delivery</v-btn
+				>
+				<v-btn v-if="auth.isAuthenticated.value" to="/deliveries/find"
+					>Find delivery</v-btn
+				>
+				<v-btn v-if="!auth.isAuthenticated.value" to="/login">
+					Login
+				</v-btn>
+				<v-btn v-if="!auth.isAuthenticated.value" to="/register">
+					Register
+				</v-btn>
+				<v-btn
+					v-if="auth.isAuthenticated.value"
+					variant="plain"
+					@click="logout"
+					>Logout</v-btn
+				></v-container
+			>
+		</v-app-bar>
+	</header>
 </template>

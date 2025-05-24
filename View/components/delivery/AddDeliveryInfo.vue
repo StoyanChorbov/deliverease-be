@@ -71,8 +71,13 @@ const handleNext = () => {
 			<LocationAutofill
 				v-model="startLocation"
 				label="Starting Location"
+				:on-update-location="() => {}"
 			/>
-			<LocationAutofill v-model="endLocation" label="Ending Location" />
+			<LocationAutofill
+				v-model="endLocation"
+				label="Ending Location"
+				:on-update-location="() => {}"
+			/>
 			<v-textarea
 				variant="outlined"
 				v-model="description"

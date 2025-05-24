@@ -25,14 +25,14 @@ export const useApi = async <T>(url: string, options: any = {}) => {
                     }
                 }).catch((error) => {
                     if (error.response.status === 401) {
-                        auth.clearTokens();
+                        auth.clearCookies();
                         return;
                     }
                     throw error;
                 });
 
                 if (res == null) {
-                    auth.clearTokens();
+                    auth.clearCookies();
                     return navigateTo("/login");
                 }
 
@@ -49,7 +49,7 @@ export const useApi = async <T>(url: string, options: any = {}) => {
                     }
                     return await $fetch<T>(url, opts);
                 } else {
-                    auth.clearTokens();
+                    auth.clearCookies();
                     return navigateTo("/login");
                 }
             }
